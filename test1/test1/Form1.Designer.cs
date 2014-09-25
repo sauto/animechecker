@@ -29,18 +29,20 @@
         private void InitializeComponent()
         {
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.button1 = new System.Windows.Forms.Button();
-            this.RestTime = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button1 = new System.Windows.Forms.Button();
+            this.RestTime = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Check,
@@ -52,6 +54,25 @@
             this.dataGridView1.Size = new System.Drawing.Size(348, 150);
             this.dataGridView1.TabIndex = 3;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            this.dataGridView1.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentDoubleClick);
+            // 
+            // Check
+            // 
+            this.Check.FalseValue = "false";
+            this.Check.HeaderText = "";
+            this.Check.Name = "Check";
+            this.Check.TrueValue = "true";
+            this.Check.Width = 25;
+            // 
+            // Title
+            // 
+            this.Title.HeaderText = "タイトル";
+            this.Title.Name = "Title";
+            // 
+            // Time
+            // 
+            this.Time.HeaderText = "時間(分)";
+            this.Time.Name = "Time";
             // 
             // button1
             // 
@@ -80,27 +101,23 @@
             this.label1.TabIndex = 6;
             this.label1.Text = "残り時間";
             // 
-            // Check
+            // checkBox1
             // 
-            this.Check.HeaderText = "";
-            this.Check.Name = "Check";
-            this.Check.Width = 25;
-            // 
-            // Title
-            // 
-            this.Title.HeaderText = "タイトル";
-            this.Title.Name = "Title";
-            // 
-            // Time
-            // 
-            this.Time.HeaderText = "時間(分)";
-            this.Time.Name = "Time";
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(65, 36);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(100, 16);
+            this.checkBox1.TabIndex = 7;
+            this.checkBox1.Text = "testcheckBox1";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.testcheckBox1_CheckedChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(491, 448);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.RestTime);
             this.Controls.Add(this.button1);
@@ -119,6 +136,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox RestTime;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Check;
         private System.Windows.Forms.DataGridViewTextBoxColumn Title;
         private System.Windows.Forms.DataGridViewTextBoxColumn Time;
