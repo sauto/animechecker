@@ -14,14 +14,18 @@ namespace test1
     public partial class Form1 : Form
     {
         public Datas _dataList;
+        const string DATA_FILE_NAME = "data.xml";
+        const string CONFIG_FILE_NAME = "config.txt";
 
         public Form1()
         {
             InitializeComponent();
 
+            Datas dataListFromConfig = null;
             int summary = 0;
-            int result;
-            string fileName = System.Windows.Forms.Application.StartupPath + "\\" + "data.xml";
+            int time;
+            string dataFileName = System.Windows.Forms.Application.StartupPath + "\\" + DATA_FILE_NAME;
+            string configFileName = System.Windows.Forms.Application.StartupPath + "\\" + CONFIG_FILE_NAME;
 
             //データファイルがない場合DL
             //System.Net.WebClient wc = new System.Net.WebClient();
@@ -35,31 +39,76 @@ namespace test1
                 new System.Xml.Serialization.XmlSerializer(typeof(Datas));
             //読み込むファイルを開く
             System.IO.StreamReader sr = new System.IO.StreamReader(
-                fileName, System.Text.Encoding.GetEncoding("shift_jis"));
+                dataFileName, System.Text.Encoding.GetEncoding("shift_jis"));
             //XMLファイルから読み込み、逆シリアル化する
             _dataList = (Datas)serializer.Deserialize(sr);
+
             //ファイルを閉じる
             sr.Close();
 
-            //取得データから表の生成
-            foreach(Data data in _dataList.datas)
+            //コンフィグファイルがないなら取得xmlデータから表の生成
+            //コンフィグファイルはあるが、xmlにデータを追加した場合は？
+            //→データリストを比較する
+            if (!System.IO.File.Exists(configFileName))
             {
-                this.dataGridView1.Rows.Add(false, data.Title, data.Time);
-                int.TryParse(data.Time, out result);
-                summary += result;
+                foreach (Data data in _dataList.datas)
+                {
+                    this.dataGridView1.Rows.Add(false, data.Title, data.Time);
+                    int.TryParse(data.Time, out time);
+                    summary += time;
+                }
             }
+            else
+            {
+                System.IO.StreamReader sReader = new System.IO.StreamReader(
+                configFileName, System.Text.Encoding.GetEncoding("shift_jis"));
+                while (sReader.Peek() >= 0)
+                {
+                    string line = sReader.ReadLine();
+                    string[] words = line.Split(',');
 
-            //取得データの保存
+                    bool checkBoxValue;
+                    bool.TryParse(words[0], out checkBoxValue);
+
+                    //データリスト作ってxmlのデータと比較する用
+                    Data data;
+                    data.ID
+                    dataListFromConfig.datas.Add()
+
+                    this.dataGridView1.Rows.Add(checkBoxValue, words[1], words[2]);
+                    int.TryParse(words[2], out time);
+                    summary += time;
+                }
+                sReader.Close();
+            }
 
 
             //表データを保存
-            
+            SaveGrid();
 
             //残り時間の表示
             RestTime.Text = (summary/60).ToString() + "時間" + (summary%60).ToString() + "分";
         }
 
+        /// <summary>
+        /// 表データの保存　config.txtに書き出す
+        /// </summary>
+        private void SaveGrid()
+        {
+            string configFileName = System.Windows.Forms.Application.StartupPath + "\\" + CONFIG_FILE_NAME;
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(configFileName,false,System.Text.Encoding.GetEncoding("shift_jis"));
 
+            for(int row=0;row<this.dataGridView1.RowCount;row++)
+            {
+                for(int col=0;col<this.dataGridView1.ColumnCount;col++)
+                {
+                    sw.Write(this.dataGridView1[col, row].Value+",");
+                }
+                sw.Write(System.Environment.NewLine);
+            }
+            sw.Close();
+            
+        }
 
         /// <summary>
         /// 更新
@@ -113,12 +162,18 @@ namespace test1
             RestTime.Text = (summary / 60).ToString() + "時間" + (summary % 60).ToString() + "分";
         }
 
+        /// <summary>
+        /// チェックボックスをクリックしたときに連動して視聴時間を変更する
+        /// </summary>
+        /// <param name="e"></param>
         private void CheckBox_ClickEvent(DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == this.dataGridView1.Columns["Check"].Index)
             {
-                //連打するとキャストエラーが起こる
-                if (!(bool)this.dataGridView1[e.ColumnIndex, e.RowIndex].Value)
+                bool value;
+                bool.TryParse(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString(), out value);
+
+                if (!value)
                 {
                     this.dataGridView1[this.dataGridView1.Columns["Time"].Index, e.RowIndex].Value = "0";
                     this.dataGridView1[e.ColumnIndex, e.RowIndex].Value = true;
@@ -126,7 +181,9 @@ namespace test1
                 else
                 {
                     this.dataGridView1[this.dataGridView1.Columns["Time"].Index, e.RowIndex].Value =
-                        _dataList.datas.Find(s => s.Title == this.dataGridView1[this.dataGridView1.Columns["Title"].Index, e.RowIndex].Value).Time;
+                        _dataList.datas.Find(
+                        s => s.Title == this.dataGridView1[this.dataGridView1.Columns["Title"].Index, e.RowIndex].Value.ToString())
+                        .Time;
                     this.dataGridView1[e.ColumnIndex, e.RowIndex].Value = false;
                 }
             }
@@ -142,6 +199,11 @@ namespace test1
             {
                 RestTime.Text = "おいKMRァ！！";
             }
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            SaveGrid();
         }
 
 
