@@ -37,7 +37,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.SaveButton = new System.Windows.Forms.Button();
+            this.AddButton = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.メニュー = new System.Windows.Forms.ToolStripMenuItem();
+            this.保存CtrlSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -77,7 +82,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(251, 292);
+            this.button1.Location = new System.Drawing.Point(218, 291);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 4;
@@ -87,7 +92,7 @@
             // 
             // RestTime
             // 
-            this.RestTime.Location = new System.Drawing.Point(120, 295);
+            this.RestTime.Location = new System.Drawing.Point(87, 294);
             this.RestTime.Name = "RestTime";
             this.RestTime.ReadOnly = true;
             this.RestTime.Size = new System.Drawing.Size(100, 19);
@@ -96,7 +101,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(63, 297);
+            this.label1.Location = new System.Drawing.Point(30, 296);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 12);
             this.label1.TabIndex = 6;
@@ -115,7 +120,7 @@
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(345, 292);
+            this.SaveButton.Location = new System.Drawing.Point(312, 291);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(75, 23);
             this.SaveButton.TabIndex = 8;
@@ -123,20 +128,62 @@
             this.SaveButton.UseVisualStyleBackColor = true;
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
+            // AddButton
+            // 
+            this.AddButton.Location = new System.Drawing.Point(32, 65);
+            this.AddButton.Name = "AddButton";
+            this.AddButton.Size = new System.Drawing.Size(75, 23);
+            this.AddButton.TabIndex = 9;
+            this.AddButton.Text = "行の追加";
+            this.AddButton.UseVisualStyleBackColor = true;
+            this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.メニュー});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(491, 26);
+            this.menuStrip1.TabIndex = 10;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // メニュー
+            // 
+            this.メニュー.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.メニュー.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.保存CtrlSToolStripMenuItem});
+            this.メニュー.Name = "メニュー";
+            this.メニュー.Size = new System.Drawing.Size(68, 22);
+            this.メニュー.Text = "メニュー";
+            // 
+            // 保存CtrlSToolStripMenuItem
+            // 
+            this.保存CtrlSToolStripMenuItem.Name = "保存CtrlSToolStripMenuItem";
+            this.保存CtrlSToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.保存CtrlSToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.保存CtrlSToolStripMenuItem.Text = "保存";
+            this.保存CtrlSToolStripMenuItem.Click += new System.EventHandler(this.CtrlSToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(491, 448);
+            this.Controls.Add(this.AddButton);
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.RestTime);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -153,6 +200,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Title;
         private System.Windows.Forms.DataGridViewTextBoxColumn Time;
         private System.Windows.Forms.Button SaveButton;
+        private System.Windows.Forms.Button AddButton;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem メニュー;
+        private System.Windows.Forms.ToolStripMenuItem 保存CtrlSToolStripMenuItem;
 
     }
 }

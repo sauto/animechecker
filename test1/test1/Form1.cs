@@ -49,6 +49,9 @@ namespace test1
             //コンフィグファイルがないなら取得xmlデータから表の生成
             //コンフィグファイルはあるが、xmlにデータを追加した場合は？
             //→データリストを比較する
+            //そもそもxmlに追加するんじゃなくてフォーム上で行追加できるようにすればいいんじゃ
+            //なんで設定データがtxtとxmlの2つあるのか　configをxmlに統一？
+            //設計書を作ろう
             if (!System.IO.File.Exists(configFileName))
             {
                 foreach (Data data in _dataList.datas)
@@ -70,10 +73,10 @@ namespace test1
                     bool checkBoxValue;
                     bool.TryParse(words[0], out checkBoxValue);
 
-                    //データリスト作ってxmlのデータと比較する用
-                    Data data;
-                    data.ID
-                    dataListFromConfig.datas.Add()
+                    ////データリスト作ってxmlのデータと比較する用
+                    //Data data;
+                    //data.ID
+                    //dataListFromConfig.datas.Add()
 
                     this.dataGridView1.Rows.Add(checkBoxValue, words[1], words[2]);
                     int.TryParse(words[2], out time);
@@ -117,8 +120,28 @@ namespace test1
         /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
-            //DLしてきたやつからデータ取得
+            //OpenFileDialogクラスのインスタンスを作成
+            OpenFileDialog ofd = new OpenFileDialog();
 
+            //はじめのファイル名を指定する
+            //はじめに「ファイル名」で表示される文字列を指定する
+            ofd.FileName = "config.txt";
+            //はじめに表示されるフォルダを指定する
+            //指定しない（空の文字列）の時は、現在のディレクトリが表示される
+            ofd.InitialDirectory = System.Windows.Forms.Application.StartupPath;
+            //[ファイルの種類]ではじめに
+            //「すべてのファイル」が選択されているようにする
+            ofd.FilterIndex = 2;
+            //タイトルを設定する
+            ofd.Title = "開くファイルを選択してください";
+
+            //ダイアログを表示する
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                string configFileName = System.Windows.Forms.Application.StartupPath + "\\" + CONFIG_FILE_NAME;
+                // ファイルを指定してメモ帳を起動する
+                System.Diagnostics.Process.Start("Notepad", configFileName);
+            }
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -170,20 +193,25 @@ namespace test1
         {
             if (e.ColumnIndex == this.dataGridView1.Columns["Check"].Index)
             {
-                bool value;
-                bool.TryParse(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString(), out value);
+                bool check;
+                bool.TryParse(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString(), out check);
 
-                if (!value)
+                //チェックがついてないなら視聴時間を0にする
+                //チェックがついているなら視聴時間を元に戻す
+                if (!check)
                 {
                     this.dataGridView1[this.dataGridView1.Columns["Time"].Index, e.RowIndex].Value = "0";
                     this.dataGridView1[e.ColumnIndex, e.RowIndex].Value = true;
                 }
                 else
                 {
-                    this.dataGridView1[this.dataGridView1.Columns["Time"].Index, e.RowIndex].Value =
-                        _dataList.datas.Find(
-                        s => s.Title == this.dataGridView1[this.dataGridView1.Columns["Title"].Index, e.RowIndex].Value.ToString())
-                        .Time;
+                    Data time = _dataList.datas.Find(
+                         s => s.Title == this.dataGridView1[this.dataGridView1.Columns["Title"].Index, e.RowIndex].Value.ToString()
+                         );
+                    if (time != null)
+                    {
+                        this.dataGridView1[this.dataGridView1.Columns["Time"].Index, e.RowIndex].Value = time.Time;
+                    }
                     this.dataGridView1[e.ColumnIndex, e.RowIndex].Value = false;
                 }
             }
@@ -206,6 +234,17 @@ namespace test1
             SaveGrid();
         }
 
+        private void AddButton_Click(object sender, EventArgs e)
+        {
+            this.dataGridView1.Rows.Add(false, "", "");
+        }
+
+        private void CtrlSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveGrid();
+        }
+
+
 
 
 
@@ -216,6 +255,7 @@ namespace test1
  * アニメのリストをDLしてきて表示する
  * 設定によって自前も可能
  * リストのファイル形式はxml
+ * 行追加はAddボタンによって可能
  * 見終わったらチェックボックスをONにする
  * チェックONのアニメは視聴時間が0になる
  * チェックOFFのアニメは視聴時間が元に戻る
