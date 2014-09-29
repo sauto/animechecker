@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -54,10 +55,10 @@
             this.Check,
             this.Title,
             this.Time});
-            this.dataGridView1.Location = new System.Drawing.Point(32, 105);
+            this.dataGridView1.Location = new System.Drawing.Point(32, 58);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 21;
-            this.dataGridView1.Size = new System.Drawing.Size(348, 150);
+            this.dataGridView1.Size = new System.Drawing.Size(268, 218);
             this.dataGridView1.TabIndex = 3;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             this.dataGridView1.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentDoubleClick);
@@ -110,12 +111,13 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(65, 36);
+            this.checkBox1.Location = new System.Drawing.Point(354, 367);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(100, 16);
             this.checkBox1.TabIndex = 7;
             this.checkBox1.Text = "testcheckBox1";
             this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.Visible = false;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.testcheckBox1_CheckedChanged);
             // 
             // SaveButton
@@ -130,7 +132,7 @@
             // 
             // AddButton
             // 
-            this.AddButton.Location = new System.Drawing.Point(32, 65);
+            this.AddButton.Location = new System.Drawing.Point(32, 29);
             this.AddButton.Name = "AddButton";
             this.AddButton.Size = new System.Drawing.Size(75, 23);
             this.AddButton.TabIndex = 9;
@@ -161,7 +163,7 @@
             // 
             this.保存CtrlSToolStripMenuItem.Name = "保存CtrlSToolStripMenuItem";
             this.保存CtrlSToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.保存CtrlSToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.保存CtrlSToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.保存CtrlSToolStripMenuItem.Text = "保存";
             this.保存CtrlSToolStripMenuItem.Click += new System.EventHandler(this.CtrlSToolStripMenuItem_Click);
             // 
@@ -178,9 +180,10 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "アニメ視聴チェックリスト";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

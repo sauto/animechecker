@@ -229,11 +229,21 @@ namespace test1
             }
         }
 
+        /// <summary>
+        /// 保存ボタンのクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SaveButton_Click(object sender, EventArgs e)
         {
             SaveGrid();
         }
 
+        /// <summary>
+        /// 行の追加ボタンのクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddButton_Click(object sender, EventArgs e)
         {
             this.dataGridView1.Rows.Add(false, "", "");
