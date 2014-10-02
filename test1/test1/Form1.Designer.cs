@@ -35,20 +35,20 @@
             this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RestTime = new System.Windows.Forms.TextBox();
             this.RestTimeText = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.SaveButton = new System.Windows.Forms.Button();
             this.AddButton = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.メニュー = new System.Windows.Forms.ToolStripMenuItem();
             this.保存CtrlSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.オプションToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.レイアウトリセットToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.InitLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FixLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -61,7 +61,7 @@
             this.Check,
             this.Title,
             this.Time});
-            this.dataGridView1.Location = new System.Drawing.Point(32, 58);
+            this.dataGridView1.Location = new System.Drawing.Point(12, 29);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 21;
             this.dataGridView1.Size = new System.Drawing.Size(268, 218);
@@ -69,6 +69,7 @@
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             this.dataGridView1.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentDoubleClick);
             this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
+            this.dataGridView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dataGridView1_KeyPress);
             this.dataGridView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseDown);
             this.dataGridView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseMove);
             this.dataGridView1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseUp);
@@ -93,7 +94,7 @@
             // 
             // RestTime
             // 
-            this.RestTime.Location = new System.Drawing.Point(64, 11);
+            this.RestTime.Location = new System.Drawing.Point(84, 3);
             this.RestTime.Name = "RestTime";
             this.RestTime.ReadOnly = true;
             this.RestTime.Size = new System.Drawing.Size(100, 19);
@@ -105,7 +106,7 @@
             // RestTimeText
             // 
             this.RestTimeText.AutoSize = true;
-            this.RestTimeText.Location = new System.Drawing.Point(9, 14);
+            this.RestTimeText.Location = new System.Drawing.Point(18, 6);
             this.RestTimeText.Name = "RestTimeText";
             this.RestTimeText.Size = new System.Drawing.Size(49, 12);
             this.RestTimeText.TabIndex = 6;
@@ -115,21 +116,9 @@
             this.RestTimeText.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RestTimeText_MouseMove);
             this.RestTimeText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RestTimeText_MouseUp);
             // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(354, 367);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(100, 16);
-            this.checkBox1.TabIndex = 7;
-            this.checkBox1.Text = "testcheckBox1";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.Visible = false;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.testcheckBox1_CheckedChanged);
-            // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(225, 290);
+            this.SaveButton.Location = new System.Drawing.Point(299, 74);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(75, 23);
             this.SaveButton.TabIndex = 8;
@@ -142,7 +131,7 @@
             // 
             // AddButton
             // 
-            this.AddButton.Location = new System.Drawing.Point(32, 29);
+            this.AddButton.Location = new System.Drawing.Point(299, 29);
             this.AddButton.Name = "AddButton";
             this.AddButton.Size = new System.Drawing.Size(75, 23);
             this.AddButton.TabIndex = 9;
@@ -184,47 +173,57 @@
             // オプションToolStripMenuItem
             // 
             this.オプションToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.レイアウトリセットToolStripMenuItem});
+            this.InitLayoutToolStripMenuItem,
+            this.FixLayoutToolStripMenuItem});
             this.オプションToolStripMenuItem.Name = "オプションToolStripMenuItem";
             this.オプションToolStripMenuItem.Size = new System.Drawing.Size(80, 22);
             this.オプションToolStripMenuItem.Text = "オプション";
             // 
-            // レイアウトリセットToolStripMenuItem
+            // InitLayoutToolStripMenuItem
             // 
-            this.レイアウトリセットToolStripMenuItem.Name = "レイアウトリセットToolStripMenuItem";
-            this.レイアウトリセットToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.レイアウトリセットToolStripMenuItem.Text = "レイアウトリセット";
+            this.InitLayoutToolStripMenuItem.Name = "InitLayoutToolStripMenuItem";
+            this.InitLayoutToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.InitLayoutToolStripMenuItem.Text = "レイアウトリセット";
+            this.InitLayoutToolStripMenuItem.Click += new System.EventHandler(this.InitLayoutToolStripMenuItem_Click);
+            // 
+            // FixLayoutToolStripMenuItem
+            // 
+            this.FixLayoutToolStripMenuItem.Name = "FixLayoutToolStripMenuItem";
+            this.FixLayoutToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.FixLayoutToolStripMenuItem.Text = "レイアウトの固定";
+            this.FixLayoutToolStripMenuItem.Click += new System.EventHandler(this.FixLayoutToolStripMenuItem_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.RestTime);
+            this.panel1.Controls.Add(this.RestTimeText);
+            this.panel1.Location = new System.Drawing.Point(299, 129);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(187, 23);
+            this.panel1.TabIndex = 12;
+            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
+            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
             // 
             // pictureBox1
             // 
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Image = global::test1.Properties.Resources.画像変更促し;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(491, 393);
+            this.pictureBox1.Size = new System.Drawing.Size(491, 316);
             this.pictureBox1.TabIndex = 11;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDoubleClick);
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.RestTimeText);
-            this.panel1.Controls.Add(this.RestTime);
-            this.panel1.Location = new System.Drawing.Point(19, 283);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(200, 100);
-            this.panel1.TabIndex = 12;
-            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(491, 393);
+            this.ClientSize = new System.Drawing.Size(491, 316);
             this.Controls.Add(this.AddButton);
             this.Controls.Add(this.SaveButton);
-            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panel1);
@@ -237,9 +236,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -250,7 +249,6 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.TextBox RestTime;
         private System.Windows.Forms.Label RestTimeText;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.Button AddButton;
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -258,11 +256,12 @@
         private System.Windows.Forms.ToolStripMenuItem 保存CtrlSToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem オプションToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem レイアウトリセットToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem InitLayoutToolStripMenuItem;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Check;
         private System.Windows.Forms.DataGridViewTextBoxColumn Title;
         private System.Windows.Forms.DataGridViewTextBoxColumn Time;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.ToolStripMenuItem FixLayoutToolStripMenuItem;
 
     }
 }
