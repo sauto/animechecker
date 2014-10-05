@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.Threading;
 using GridDatas;
 using NewContorol;
 
@@ -32,6 +33,18 @@ namespace test1
         List<Point> _defaultLocationList = new List<Point>();
 
 
+        enum DayOfWeek
+        {
+            月 = 0,
+            火,
+            水,
+            木,
+            金,
+            土,
+            日
+
+        }
+
         public Form1()
         {
             InitializeComponent();
@@ -54,9 +67,10 @@ namespace test1
                 //ファイルを閉じる
                 sr.Close();
 
+                //行の追加
                 foreach (Data data in _allData.dataList)
                 {
-                    this.dataGridView1.Rows.Add(false, data.Title, data.Time);
+                    this.dataGridView1.Rows.Add(false, data.Title, data.Time,data.Day,data.ID);
                     int.TryParse(data.Time, out time);
                     summary += time;
                 }
@@ -92,42 +106,80 @@ namespace test1
         /// </summary>
         private void SaveGrid()
         {
+            //xml書き出し用データ生成
+            CreateAllData();
 
-            AllData allData = new AllData();
+            //xml書き出し
+            WriteXml(_allData);
+            
+        }
+
+        /// <summary>
+        /// 表データリストの作成
+        /// </summary>
+        private void CreateAllData()
+        {
+            _allData = new AllData();
 
             //n行目をIDとし、列の総覧によってグリッドの各列を保存して１つのxml部分を作る
-            for(int row=0;row<this.dataGridView1.RowCount;row++)
+            for (int row = 0; row < this.dataGridView1.RowCount; row++)
             {
                 Data data = new Data();
-                data.ID = row.ToString();
-                for(int col=0;col<this.dataGridView1.ColumnCount;col++)
+                for (int col = 0; col < this.dataGridView1.ColumnCount; col++)
                 {
-                    switch(col)
+                    switch (col)
                     {
                         case 0:
-                            data.Check = this.dataGridView1[col, row].Value.ToString();
+                            if (this.dataGridView1[col, row].Value != null)
+                                data.Check = this.dataGridView1[col, row].Value.ToString();
+                            else
+                                data.Check = false.ToString();
                             break;
                         case 1:
-                            data.Title = this.dataGridView1[col, row].Value.ToString();
+                            if (this.dataGridView1[col, row].Value != null)
+                                data.Title = this.dataGridView1[col, row].Value.ToString();
+                            else
+                                data.Title = string.Empty;
                             break;
                         case 2:
-                            data.Time = this.dataGridView1[col, row].Value.ToString();
+                            if (this.dataGridView1[col, row].Value != null)
+                                data.Time = this.dataGridView1[col, row].Value.ToString();
+                            else
+                                data.Time = string.Empty;
+                            break;
+                        case 3:
+                            if (this.dataGridView1[col, row].Value != null)
+                                data.Day = this.dataGridView1[col, row].Value.ToString();
+                            else
+                                data.Day = string.Empty;
+                            break;
+                        case 4:
+                            if (this.dataGridView1[col, row].Value != null)
+                                data.ID = this.dataGridView1[col, row].Value.ToString();
+                            else
+                                data.ID = string.Empty;
                             break;
                     }
 
                 }
-                allData.dataList.Add(data);
+                _allData.dataList.Add(data);
             }
+        }
 
-            //xml書き出し
+        /// <summary>
+        /// xmlを書き出す
+        /// </summary>
+        /// <param name="obj"></param>
+        private void WriteXml(object obj) 
+        {
             System.Xml.Serialization.XmlSerializer serializer =
                 new System.Xml.Serialization.XmlSerializer(typeof(AllData));
             System.IO.StreamWriter sw = new System.IO.StreamWriter(_dataFileName, false, System.Text.Encoding.GetEncoding("shift_jis"));
-            serializer.Serialize(sw, allData);
+            serializer.Serialize(sw, obj);
             sw.Close();
-            
         }
 
+        #region レイアウト
         /// <summary>
         /// 各コントロールの初期位置を保存
         /// </summary>
@@ -229,6 +281,30 @@ namespace test1
             sr.Close();
         }
 
+        /// <summary>
+        /// レイアウトを固定するか
+        /// </summary>
+        bool _isFixLayout = false;
+        /// <summary>
+        /// レイアウトの固定
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FixLayoutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!_isFixLayout)
+            {
+                this.FixLayoutToolStripMenuItem.Checked = true;
+                _isFixLayout = true;
+            }
+            else
+            {
+                this.FixLayoutToolStripMenuItem.Checked = false;
+                _isFixLayout = false;
+            }
+        }
+        #endregion
+
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             //チェックしたら時間を0にする
@@ -307,19 +383,124 @@ namespace test1
         /// <param name="e"></param>
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            try
+            //CellValueChangedイベントがプログラム起動時に発生するが、
+            //そのときにはまだTime列が存在していない（列は存在するがTimeという名前の列がない）
+            //ので例外が発生するのを防止するため判定
+            if (this.dataGridView1.Columns.Contains("Time"))
             {
                 if (e.ColumnIndex == this.dataGridView1.Columns["Time"].Index)
                 {
-                    RestTimeDisplay();
+                    //空白入力時と異常値入力時の空白入力時を回避
+                    if (this.dataGridView1[e.ColumnIndex, e.RowIndex].Value != null &&
+                        !string.IsNullOrEmpty(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString()))
+                    {
+                        int result;
+                        //半角数字以外が入力されたらエラー
+                        if (int.TryParse(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString(), out result))
+                        {
+                            RestTimeDisplay();
+
+                            //正常値入力→異常値入力とすると入力した正常値に戻らない（データリストが変更されてない）ので
+                            //データリストだけ作り直してelse内のRevert処理を行えるようにする。
+                            //xml書き出しまでやると重いのでこれだけやる
+                            CreateAllData();
+                        }
+                        else
+                        {
+                            MessageBox.Show("正しい値を入力してください。",
+                                            "エラー",
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Error);
+
+
+                            //時間に半角数字以外を入力→隣のｾﾙをクリック→MouseDownイベント起動→エラーメッセージボックスとなり
+                            //MouseUpイベントが起動しないままになる
+                            //その状態でコントロールへカーソルを合わせるとMouseMoveが起動して動く
+                            //のを防止
+                            isDraggable = false;
+
+                            //空白はキーにしない
+                            if (_allData.dataList.Find(s =>
+                                    s.Title == this.dataGridView1[e.ColumnIndex - 1, e.RowIndex].Value.ToString()
+                                   && !string.IsNullOrEmpty(s.Title)
+                                   ) != null)
+                            {
+                                //タイトルをキーとして元の視聴時間を取得
+                                this.dataGridView1[e.ColumnIndex, e.RowIndex].Value =
+                                    _allData.dataList.Find(s =>
+                                        s.Title == this.dataGridView1[e.ColumnIndex - 1, e.RowIndex].Value.ToString()).Time;
+                            }
+                            else
+                            {
+                                this.dataGridView1[e.ColumnIndex, e.RowIndex].Value = null;
+                            }
+                        }
+                    }
                 }
             }
-            catch(Exception exc)
+
+            if (this.dataGridView1.Columns.Contains("WeekColumn"))
             {
-                //CellValueChangedイベントがプログラム起動時に発生するが、
-                //そのときにはまだTime列が存在していない（列は存在するがTimeという名前の列がない）
-                //ので例外が発生するのを防止するため
+                if (e.ColumnIndex == this.dataGridView1.Columns["WeekColumn"].Index)
+                {
+                    //空白入力時と異常値入力時の空白入力時を回避
+                    if (this.dataGridView1[e.ColumnIndex, e.RowIndex].Value != null &&
+                        !string.IsNullOrEmpty(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString()))
+                    {
+
+                        //曜日以外が入力されたらエラー
+                        if (Enum.IsDefined(typeof(DayOfWeek), this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString()))
+                        {
+                            RestTimeDisplay();
+
+                            //正常値入力→異常値入力とすると入力した正常値に戻らない（データリストが変更されてない）ので
+                            //データリストだけ作り直してelse内のRevert処理を行えるようにする。
+                            //xml書き出しまでやると重いのでこれだけやる
+                            CreateAllData();
+                        }
+                        else if(!this.dataGridView1.IsCurrentCellInEditMode)
+                        {
+                            MessageBox.Show("正しい値を入力してください。",
+                                            "エラー",
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Error);
+
+
+                            //時間に半角数字以外を入力→隣のｾﾙをクリック→MouseDownイベント起動→エラーメッセージボックスとなり
+                            //MouseUpイベントが起動しないままになる
+                            //その状態でコントロールへカーソルを合わせるとMouseMoveが起動して動く
+                            //のを防止
+                            isDraggable = false;
+
+                            //タイトルが空白のまま、曜日に正常値入力→曜日に異常値入力とすると
+                            //タイトル空白のため検索できないので正常値に戻らない
+
+                            //曜日を入力→確定しないで列先頭をクリック→CellValueChangedではなくClickColumnHeaderが起動
+                            //→値が確定していないので、グリッドの値を保存できない
+
+
+                            //空白はキーにしない
+                            if (_allData.dataList.Find(s =>
+                                    s.ID == this.dataGridView1[this.dataGridView1.Columns["ID"].Index, e.RowIndex].Value.ToString()
+                                   
+                                   ) != null)
+                            {
+                                //非表示のID列を作って、IDをキーとして元の視聴時間を取得
+                                this.dataGridView1[e.ColumnIndex, e.RowIndex].Value =
+                                    _allData.dataList.Find(s =>
+                                        s.ID == this.dataGridView1[
+                                        this.dataGridView1.Columns["ID"].Index, e.RowIndex].Value.ToString()).Day;
+                            }
+                            else
+                            {
+                                this.dataGridView1[e.ColumnIndex, e.RowIndex].Value = null;
+                            }
+                        }
+                    }
+                }
             }
+
+            _nowInput = false;
         }
 
         /// <summary>
@@ -351,6 +532,12 @@ namespace test1
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveLayout();
+        }
+
+
+        private void InitLayoutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RestoreLayout();
         }
 
         /// <summary>
@@ -385,10 +572,26 @@ namespace test1
                 this.pictureBox1.Image = img;
                 _imgFilePath = ofd.FileName;
             }
-            
+         }
+
+        /// <summary>
+        /// 行の追加ボタンのクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddButton_Click(object sender, EventArgs e)
+        {
+            //ドラッグ移動した場合は追加しない
+            if (!isMouseMove)
+                this.dataGridView1.Rows.Add(false, "", "", "", this.dataGridView1.RowCount + 1);
+        }
+        private void AddRowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.dataGridView1.Rows.Add(false, "", "", "", this.dataGridView1.RowCount + 1);
         }
 
         #region コントロールの移動イベント
+
         /// <summary>
         /// ドラッグ中か
         /// </summary>
@@ -400,89 +603,106 @@ namespace test1
 
         private void dataGridView1_MouseDown(object sender, MouseEventArgs e)
         {
-            isDraggable = true;
-            point.X = e.X;
-            point.Y = e.Y;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = true;
+                point.X = e.X;
+                point.Y = e.Y;
+            }
         }
 
         private void dataGridView1_MouseMove(object sender, MouseEventArgs e)
         {
-            if ( !isDraggable || _isFixLayout)
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
             {
-                return;
+                if (!isDraggable || _isFixLayout)
+                {
+                    return;
+                }
+                //移動処理
+                this.dataGridView1.Left += e.X - point.X;
+                this.dataGridView1.Top += e.Y - point.Y;
             }
-            //移動処理
-            this.dataGridView1.Left += e.X - point.X;
-            this.dataGridView1.Top += e.Y - point.Y;
         }
 
         private void dataGridView1_MouseUp(object sender, MouseEventArgs e)
         {
-            isDraggable = false;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = false;
+            }
         }
 
-        /// <summary>
-        /// 行の追加ボタンのクリック
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void AddButton_Click(object sender, EventArgs e)
-        {
-            //ドラッグ移動した場合は追加しない
-            if (!isMouseMove)
-                this.dataGridView1.Rows.Add(false, "", "");
-        }
+        //境界線でリサイズするとマウスダウンが起動して移動フラグが立っちゃう
 
         private void AddButton_MouseDown(object sender, MouseEventArgs e)
         {
-            isDraggable = true;
-            point.X = e.X;
-            point.Y = e.Y;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = true;
+                point.X = e.X;
+                point.Y = e.Y;
+            }
         }
 
         bool isMouseMove = false;
 
         private void AddButton_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isDraggable || _isFixLayout)
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
             {
-                return;
-            }
-            //移動処理
-            this.AddButton.Left += e.X - point.X;
-            this.AddButton.Top += e.Y - point.Y;
+                if (!isDraggable || _isFixLayout)
+                {
+                    return;
+                }
+                //移動処理
+                this.AddButton.Left += e.X - point.X;
+                this.AddButton.Top += e.Y - point.Y;
 
-            isMouseMove = true;
+                isMouseMove = true;
+            }
         }
 
         private void AddButton_MouseUp(object sender, MouseEventArgs e)
         {
-            isDraggable = false;
-            isMouseMove = false;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = false;
+                isMouseMove = false;
+            }
         }
 
 
         private void SaveButton_MouseDown(object sender, MouseEventArgs e)
         {
-            isDraggable = true;
-            point.X = e.X;
-            point.Y = e.Y;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = true;
+                point.X = e.X;
+                point.Y = e.Y;
+            }
         }
 
         private void SaveButton_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isDraggable || _isFixLayout)
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
             {
-                return;
+                if (!isDraggable || _isFixLayout)
+                {
+                    return;
+                }
+                //移動処理
+                this.SaveButton.Left += e.X - point.X;
+                this.SaveButton.Top += e.Y - point.Y;
             }
-            //移動処理
-            this.SaveButton.Left += e.X - point.X;
-            this.SaveButton.Top += e.Y - point.Y;
         }
 
         private void SaveButton_MouseUp(object sender, MouseEventArgs e)
         {
-            isDraggable = false;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = false;
+            }
         }
 
         /// <summary>
@@ -499,117 +719,280 @@ namespace test1
         /// <param name="e"></param>
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
-            isDraggable = true;
-            point.X = e.X;
-            point.Y = e.Y;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = true;
+                point.X = e.X;
+                point.Y = e.Y;
+            }
         }
 
         private void panel1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isDraggable || _isFixLayout)
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
             {
-                return;
+                if (!isDraggable || _isFixLayout)
+                {
+                    return;
+                }
+                //移動処理
+                this.panel1.Left += e.X - point.X;
+                this.panel1.Top += e.Y - point.Y;
             }
-            //移動処理
-            this.panel1.Left += e.X - point.X;
-            this.panel1.Top += e.Y - point.Y;
         }
 
         private void panel1_MouseUp(object sender, MouseEventArgs e)
         {
-            isDraggable = false;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+                {
+                    isDraggable = false;
+                }
+            }
         }
 
-        private void InitLayoutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RestoreLayout();
-        }
 
         private void RestTimeText_MouseDown(object sender, MouseEventArgs e)
         {
-            isDraggable = true;
-            point.X = e.X;
-            point.Y = e.Y;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = true;
+                point.X = e.X;
+                point.Y = e.Y;
+            }
         }
 
         private void RestTimeText_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isDraggable || _isFixLayout)
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
             {
-                return;
+                if (!isDraggable || _isFixLayout)
+                {
+                    return;
+                }
+                //移動処理
+                this.panel1.Left += e.X - point.X;
+                this.panel1.Top += e.Y - point.Y;
             }
-            //移動処理
-            this.panel1.Left += e.X - point.X;
-            this.panel1.Top += e.Y - point.Y;
 
         }
 
         private void RestTimeText_MouseUp(object sender, MouseEventArgs e)
         {
-            isDraggable = false;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = false;
+            }
         }
 
         private void RestTime_MouseDown(object sender, MouseEventArgs e)
         {
-            isDraggable = true;
-            point.X = e.X;
-            point.Y = e.Y;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = true;
+                point.X = e.X;
+                point.Y = e.Y;
+            }
         }
 
         private void RestTime_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isDraggable || _isFixLayout)
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
             {
-                return;
+                if (!isDraggable || _isFixLayout)
+                {
+                    return;
+                }
+                //移動処理
+                this.panel1.Left += e.X - point.X;
+                this.panel1.Top += e.Y - point.Y;
             }
-            //移動処理
-            this.panel1.Left += e.X - point.X;
-            this.panel1.Top += e.Y - point.Y;
 
         }
 
         private void RestTime_MouseUp(object sender, MouseEventArgs e)
         {
-            isDraggable = false;
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = false;
+            }
         }
 
         #endregion
 
+
+
         /// <summary>
-        /// レイアウトを固定するか
-        /// </summary>
-        bool _isFixLayout = false;
-        /// <summary>
-        /// レイアウトの固定
+        /// 曜日列をクリックしたとき曜日順にソート
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void FixLayoutToolStripMenuItem_Click(object sender, EventArgs e)
+        private void dataGridView1_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (!_isFixLayout)
+            CreateAllData();
+            if (e.ColumnIndex == this.dataGridView1.Columns["WeekColumn"].Index)
             {
-                this.FixLayoutToolStripMenuItem.Checked = true;
-                _isFixLayout = true;
-            }
-            else
-            {
-                this.FixLayoutToolStripMenuItem.Checked = false;
-                _isFixLayout = false;
+                WeekSort();
             }
         }
 
         /// <summary>
-        /// 入力制限
+        /// 曜日順にソート
+        /// </summary>
+        private void WeekSort()
+        {
+            //入力後、列先頭クリックするとデータが確定する前に削除しているので、再作成時にデータリストから復旧できない
+            //CurrentCellDirtyStateChangedで入力中の値を取得できるのでこれで確定させるとできた
+            //しかし異常値でいちいちエラーが出るうえ元に戻らない
+            //コミットしたあと編集終了してもValueChangedイベントが起きない
+            //
+            
+            //空白があったらその行はいったん退避してソート後に後ろに付け足す
+            List<Data> tempDataList = new List<Data>();
+            List<Data> emptyDataList = new List<Data>();
+
+            if (_allData.dataList.Find(s => string.IsNullOrEmpty(s.Day)) != null)
+            {
+                foreach(var data in _allData.dataList)
+                {
+                    if (!string.IsNullOrEmpty(data.Day))
+                    {
+                        tempDataList.Add(data);
+                    }
+                    else
+                    {
+                        emptyDataList.Add(data);
+                    }
+                }
+                _allData.dataList = tempDataList;
+            }
+            
+
+
+                //曜日が空白のセルがあったらソートができなくなってる
+                
+            //stringをenumに変換しさらにそれをint変換してソート
+            _allData.dataList.Sort((a, b) =>
+                (int)((DayOfWeek)Enum.Parse(typeof(DayOfWeek), a.Day)) - 
+                (int)((DayOfWeek)Enum.Parse(typeof(DayOfWeek), b.Day)));
+
+
+                //for (int row = 0; row < this.dataGridView1.RowCount; row++)
+                //{
+                //    for (int col = 0; col < this.dataGridView1.ColumnCount; col++)
+                //    {
+                //        switch(col)
+                //        {
+                //            case 0:
+                //                this.dataGridView1[col, row].Value = _allData.dataList[row].Check;
+                //                break;
+                //            case 1:
+                //                this.dataGridView1[col, row].Value = _allData.dataList[row].Title;
+                //                break;
+                //            case 2:
+                //                //row1col2でやるとリストの[1]と[3]の値が変わる
+                //                this.dataGridView1[col, row].Value = _allData.dataList[row].Time;
+                //                break;
+                //            case 3:
+                //                this.dataGridView1[col, row].Value = _allData.dataList[row].Day;
+                //                break;
+                //        }
+
+                        
+                //    }
+                //}
+
+
+
+            for (int i = this.dataGridView1.RowCount - 1; i >= 0; i--)
+            {
+                this.dataGridView1.Rows.RemoveAt(i);
+            }
+
+            foreach (Data data in emptyDataList)
+            {
+                _allData.dataList.Add(data);
+            }
+
+            foreach (Data data in _allData.dataList)
+            {
+                this.dataGridView1.Rows.Add(data.Check, data.Title, data.Time, data.Day,data.ID);
+            }
+
+
+
+        }
+
+        bool _nowInput = false;
+        /// <summary>
+        /// 入力した時点でCellValueChangedイベントを起こす
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void dataGridView1_KeyPress(object sender, KeyPressEventArgs e)
+        private void dataGridView1_CurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
-            if (e.KeyChar < '0' || '9' < e.KeyChar)
-            {
-                //押されたキーが 0～9でない場合は、イベントをキャンセルする
-                e.Handled = true;
-            }
+            _nowInput = true;
+            //this.dataGridView1.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        }
+
+        private void dataGridView1_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
+        {
+            //編集中にソートして消えるのを防止するためにCurrentCellDirtyStateChanged
+            //通常はこっちにする?
+
+            //if (this.dataGridView1.Columns.Contains("Time"))
+            //{
+            //    if (e.ColumnIndex == this.dataGridView1.Columns["Time"].Index)
+            //    {
+            //        //空白入力時と異常値入力時の空白入力時を回避
+            //        if (this.dataGridView1[e.ColumnIndex, e.RowIndex].Value != null &&
+            //            !string.IsNullOrEmpty(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString()))
+            //        {
+            //            int result;
+            //            //半角数字以外が入力されたらエラー
+            //            if (int.TryParse(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString(), out result))
+            //            {
+            //                RestTimeDisplay();
+
+            //                //正常値入力→異常値入力とすると入力した正常値に戻らない（データリストが変更されてない）ので
+            //                //データリストだけ作り直してelse内のRevert処理を行えるようにする。
+            //                //xml書き出しまでやると重いのでこれだけやる
+            //                CreateAllData();
+            //            }
+            //            else
+            //            {
+            //                MessageBox.Show("正しい値を入力してください。",
+            //                                "エラー",
+            //                                MessageBoxButtons.OK,
+            //                                MessageBoxIcon.Error);
+
+
+            //                //時間に半角数字以外を入力→隣のｾﾙをクリック→MouseDownイベント起動→エラーメッセージボックスとなり
+            //                //MouseUpイベントが起動しないままになる
+            //                //その状態でコントロールへカーソルを合わせるとMouseMoveが起動して動く
+            //                //のを防止
+            //                isDraggable = false;
+
+            //                //空白はキーにしない
+            //                if (_allData.dataList.Find(s =>
+            //                        s.Title == this.dataGridView1[e.ColumnIndex - 1, e.RowIndex].Value.ToString()
+            //                       && !string.IsNullOrEmpty(s.Title)
+            //                       ) != null)
+            //                {
+            //                    //タイトルをキーとして元の視聴時間を取得
+            //                    this.dataGridView1[e.ColumnIndex, e.RowIndex].Value =
+            //                        _allData.dataList.Find(s =>
+            //                            s.Title == this.dataGridView1[e.ColumnIndex - 1, e.RowIndex].Value.ToString()).Time;
+            //                }
+            //                else
+            //                {
+            //                    this.dataGridView1[e.ColumnIndex, e.RowIndex].Value = null;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
         }
 
     }

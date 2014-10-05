@@ -33,6 +33,8 @@
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WeekColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RestTime = new System.Windows.Forms.TextBox();
             this.RestTimeText = new System.Windows.Forms.Label();
             this.SaveButton = new System.Windows.Forms.Button();
@@ -40,6 +42,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.メニュー = new System.Windows.Forms.ToolStripMenuItem();
             this.保存CtrlSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddRowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.オプションToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InitLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FixLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,22 +57,25 @@
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.BackgroundColor = System.Drawing.Color.Azure;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Check,
             this.Title,
-            this.Time});
+            this.Time,
+            this.WeekColumn,
+            this.ID});
             this.dataGridView1.Location = new System.Drawing.Point(12, 29);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 21;
-            this.dataGridView1.Size = new System.Drawing.Size(268, 218);
+            this.dataGridView1.Size = new System.Drawing.Size(452, 218);
             this.dataGridView1.TabIndex = 3;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             this.dataGridView1.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentDoubleClick);
+            this.dataGridView1.CellParsing += new System.Windows.Forms.DataGridViewCellParsingEventHandler(this.dataGridView1_CellParsing);
             this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
-            this.dataGridView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dataGridView1_KeyPress);
+            this.dataGridView1.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_ColumnHeaderMouseClick);
+            this.dataGridView1.CurrentCellDirtyStateChanged += new System.EventHandler(this.dataGridView1_CurrentCellDirtyStateChanged);
             this.dataGridView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseDown);
             this.dataGridView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseMove);
             this.dataGridView1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseUp);
@@ -86,11 +92,24 @@
             // 
             this.Title.HeaderText = "タイトル";
             this.Title.Name = "Title";
+            this.Title.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Title.Width = 80;
             // 
             // Time
             // 
             this.Time.HeaderText = "視聴時間(分)";
             this.Time.Name = "Time";
+            // 
+            // WeekColumn
+            // 
+            this.WeekColumn.HeaderText = "放送曜日";
+            this.WeekColumn.Name = "WeekColumn";
+            this.WeekColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // ID
+            // 
+            this.ID.HeaderText = "ID";
+            this.ID.Name = "ID";
             // 
             // RestTime
             // 
@@ -106,7 +125,7 @@
             // RestTimeText
             // 
             this.RestTimeText.AutoSize = true;
-            this.RestTimeText.Location = new System.Drawing.Point(18, 6);
+            this.RestTimeText.Location = new System.Drawing.Point(16, 6);
             this.RestTimeText.Name = "RestTimeText";
             this.RestTimeText.Size = new System.Drawing.Size(49, 12);
             this.RestTimeText.TabIndex = 6;
@@ -118,7 +137,7 @@
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(299, 74);
+            this.SaveButton.Location = new System.Drawing.Point(121, 302);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(75, 23);
             this.SaveButton.TabIndex = 8;
@@ -131,7 +150,7 @@
             // 
             // AddButton
             // 
-            this.AddButton.Location = new System.Drawing.Point(299, 29);
+            this.AddButton.Location = new System.Drawing.Point(12, 302);
             this.AddButton.Name = "AddButton";
             this.AddButton.Size = new System.Drawing.Size(75, 23);
             this.AddButton.TabIndex = 9;
@@ -149,7 +168,7 @@
             this.オプションToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(491, 26);
+            this.menuStrip1.Size = new System.Drawing.Size(489, 26);
             this.menuStrip1.TabIndex = 10;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -157,7 +176,8 @@
             // 
             this.メニュー.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.メニュー.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.保存CtrlSToolStripMenuItem});
+            this.保存CtrlSToolStripMenuItem,
+            this.AddRowToolStripMenuItem});
             this.メニュー.Name = "メニュー";
             this.メニュー.Size = new System.Drawing.Size(68, 22);
             this.メニュー.Text = "メニュー";
@@ -166,9 +186,17 @@
             // 
             this.保存CtrlSToolStripMenuItem.Name = "保存CtrlSToolStripMenuItem";
             this.保存CtrlSToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.保存CtrlSToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.保存CtrlSToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.保存CtrlSToolStripMenuItem.Text = "保存";
             this.保存CtrlSToolStripMenuItem.Click += new System.EventHandler(this.CtrlSToolStripMenuItem_Click);
+            // 
+            // AddRowToolStripMenuItem
+            // 
+            this.AddRowToolStripMenuItem.Name = "AddRowToolStripMenuItem";
+            this.AddRowToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.AddRowToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.AddRowToolStripMenuItem.Text = "行の追加";
+            this.AddRowToolStripMenuItem.Click += new System.EventHandler(this.AddRowToolStripMenuItem_Click);
             // 
             // オプションToolStripMenuItem
             // 
@@ -197,7 +225,7 @@
             // 
             this.panel1.Controls.Add(this.RestTime);
             this.panel1.Controls.Add(this.RestTimeText);
-            this.panel1.Location = new System.Drawing.Point(299, 129);
+            this.panel1.Location = new System.Drawing.Point(12, 345);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(187, 23);
             this.panel1.TabIndex = 12;
@@ -211,7 +239,7 @@
             this.pictureBox1.Image = global::test1.Properties.Resources.画像変更促し;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(491, 316);
+            this.pictureBox1.Size = new System.Drawing.Size(489, 380);
             this.pictureBox1.TabIndex = 11;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDoubleClick);
@@ -221,12 +249,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(491, 316);
+            this.ClientSize = new System.Drawing.Size(489, 380);
             this.Controls.Add(this.AddButton);
             this.Controls.Add(this.SaveButton);
-            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.pictureBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
@@ -257,11 +285,14 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem オプションToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem InitLayoutToolStripMenuItem;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.ToolStripMenuItem FixLayoutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem AddRowToolStripMenuItem;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Check;
         private System.Windows.Forms.DataGridViewTextBoxColumn Title;
         private System.Windows.Forms.DataGridViewTextBoxColumn Time;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.ToolStripMenuItem FixLayoutToolStripMenuItem;
+        private System.Windows.Forms.DataGridViewTextBoxColumn WeekColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ID;
 
     }
 }

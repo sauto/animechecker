@@ -43,5 +43,10 @@ namespace GridDatas
         /// </summary>
         [System.Xml.Serialization.XmlElement("time")]
         public String Time { get; set; }
+        /// <summary>
+        /// 放送曜日
+        /// </summary>
+        [System.Xml.Serialization.XmlElement("day")]
+        public String Day { get; set; }
     }
 }
