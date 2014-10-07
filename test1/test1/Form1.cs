@@ -261,7 +261,8 @@ namespace test1
 
 
         /// <summary>
-        /// 背景画像の変更
+        /// 背景画像の変更 ピクチャボックスはフォームにドッキングしてる
+        /// ピクチャボックス右上の再生ボタン的なのをクリックすると設定可
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -289,7 +290,32 @@ namespace test1
                 this.pictureBox1.Image = img;
                 _imgFilePath = ofd.FileName;
             }
-         }
+
+            //画像がでかい場合縮小表示する
+            /*if (this.pictureBox1.Image.Height >= SystemInformation.MaxWindowTrackSize.Height
+            //    || this.pictureBox1.Image.Width >= SystemInformation.MaxWindowTrackSize.Width)
+            //{
+            //    //描画先とするImageオブジェクトを作成する
+            //    Bitmap canvas = new Bitmap(this.pictureBox1.Width, this.pictureBox1.Height);
+            //    //ImageオブジェクトのGraphicsオブジェクトを作成する
+            //    Graphics g = Graphics.FromImage(canvas);
+
+            //    //Bitmapオブジェクトの作成
+            //    Bitmap image = new Bitmap(_imgFilePath);
+            //    //補間方法として高品質双三次補間を指定する
+            //    g.InterpolationMode =
+            //        System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            //    //画像を縮小して描画する
+            //    g.DrawImage(image, 0, this.menuStrip1.Size.Height, SystemInformation.MaxWindowTrackSize.Width, SystemInformation.MaxWindowTrackSize.Height);
+
+            //    //BitmapとGraphicsオブジェクトを破棄
+            //    image.Dispose();
+            //    g.Dispose();
+
+            //    //PictureBox1に表示する
+            //    this.pictureBox1.Image = canvas;
+            }*/
+        }
 
         /// <summary>
         /// 行の追加ボタンのクリック
@@ -301,6 +327,8 @@ namespace test1
             //ドラッグ移動した場合は追加しない
             if (!isMouseMove)
                 this.dataGridView1.Rows.Add(false, "", "", "", this.dataGridView1.RowCount + 1);
+
+
         }
         private void AddRowToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -318,10 +346,13 @@ namespace test1
             GridInputCheck();
 
             CreateAllData();
+
             if (e.ColumnIndex == this.dataGridView1.Columns["WeekColumn"].Index)
             {
                 WeekSort();
             }
+
+            RestTimeDisplay();
         }
 
         /// <summary>
@@ -393,65 +424,6 @@ namespace test1
             this.dataGridView1.CommitEdit(DataGridViewDataErrorContexts.Commit);
         }
 
-        private void dataGridView1_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
-        {
-            
-            //編集中にソートして消えるのを防止するためにCurrentCellDirtyStateChanged
-            //通常はこっちにする?
-
-            //if (this.dataGridView1.Columns.Contains("Time"))
-            //{
-            //    if (e.ColumnIndex == this.dataGridView1.Columns["Time"].Index)
-            //    {
-            //        //空白入力時と異常値入力時の空白入力時を回避
-            //        if (this.dataGridView1[e.ColumnIndex, e.RowIndex].Value != null &&
-            //            !string.IsNullOrEmpty(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString()))
-            //        {
-            //            int result;
-            //            //半角数字以外が入力されたらエラー
-            //            if (int.TryParse(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString(), out result))
-            //            {
-            //                RestTimeDisplay();
-
-            //                //正常値入力→異常値入力とすると入力した正常値に戻らない（データリストが変更されてない）ので
-            //                //データリストだけ作り直してelse内のRevert処理を行えるようにする。
-            //                //xml書き出しまでやると重いのでこれだけやる
-            //                CreateAllData();
-            //            }
-            //            else
-            //            {
-            //                MessageBox.Show("正しい値を入力してください。",
-            //                                "エラー",
-            //                                MessageBoxButtons.OK,
-            //                                MessageBoxIcon.Error);
-
-
-            //                //時間に半角数字以外を入力→隣のｾﾙをクリック→MouseDownイベント起動→エラーメッセージボックスとなり
-            //                //MouseUpイベントが起動しないままになる
-            //                //その状態でコントロールへカーソルを合わせるとMouseMoveが起動して動く
-            //                //のを防止
-            //                isDraggable = false;
-
-            //                //空白はキーにしない
-            //                if (_allData.dataList.Find(s =>
-            //                        s.Title == this.dataGridView1[e.ColumnIndex - 1, e.RowIndex].Value.ToString()
-            //                       && !string.IsNullOrEmpty(s.Title)
-            //                       ) != null)
-            //                {
-            //                    //タイトルをキーとして元の視聴時間を取得
-            //                    this.dataGridView1[e.ColumnIndex, e.RowIndex].Value =
-            //                        _allData.dataList.Find(s =>
-            //                            s.Title == this.dataGridView1[e.ColumnIndex - 1, e.RowIndex].Value.ToString()).Time;
-            //                }
-            //                else
-            //                {
-            //                    this.dataGridView1[e.ColumnIndex, e.RowIndex].Value = null;
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-        }
 
         private void dataGridView1_CurrentCellChanged(object sender, EventArgs e)
         {
@@ -595,6 +567,43 @@ namespace test1
                 GridInputCheck();
         }
 
+
+        /// <summary>
+        /// 他のコントロールクリック時に入力チェック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGridView1_Leave(object sender, EventArgs e)
+        {
+            GridInputCheck();
+        }
+
+        /// <summary>
+        /// 選択行の削除
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteButton_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.Rows.Count > 1)
+                dataGridView1.Rows.RemoveAt(_selectRow);
+        }
+
+        /// <summary>
+        /// セルクリック時に選択したセルの行数
+        /// </summary>
+        int _selectRow = 0;
+
+        /// <summary>
+        /// 現在選択中の行を取得
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            _selectRow = e.RowIndex;
+        }
+
         #region コントロールの移動イベント
 
         /// <summary>
@@ -614,6 +623,7 @@ namespace test1
                 point.X = e.X;
                 point.Y = e.Y;
             }
+
         }
 
         private void dataGridView1_MouseMove(object sender, MouseEventArgs e)
@@ -824,6 +834,38 @@ namespace test1
             }
         }
 
+        private void DeleteButton_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = true;
+                point.X = e.X;
+                point.Y = e.Y;
+            }
+        }
+
+        private void DeleteButton_MouseMove(object sender, MouseEventArgs e)
+        {
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                if (!isDraggable || _isFixLayout)
+                {
+                    return;
+                }
+                //移動処理
+                this.DeleteButton.Left += e.X - point.X;
+                this.DeleteButton.Top += e.Y - point.Y;
+            }
+        }
+
+        private void DeleteButton_MouseUp(object sender, MouseEventArgs e)
+        {
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                isDraggable = false;
+            }
+        }
+
         #endregion
 
         #region レイアウト
@@ -873,6 +915,17 @@ namespace test1
             sw.Write(Environment.NewLine);
             sw.Write(this.SaveButton.Top);
             sw.Write(Environment.NewLine);
+            //画面サイズ
+            sw.Write(this.Size.Height);
+            sw.Write(Environment.NewLine);
+            sw.Write(this.Size.Width);
+            sw.Write(Environment.NewLine);
+            //行削除ボタン
+            sw.Write(this.DeleteButton.Left);
+            sw.Write(Environment.NewLine);
+            sw.Write(this.DeleteButton.Top);
+            sw.Write(Environment.NewLine);
+
 
             sw.Close();
         }
@@ -885,6 +938,7 @@ namespace test1
             System.IO.StreamReader sr = new System.IO.StreamReader(
                 _configFileName, System.Text.Encoding.GetEncoding("shift_jis"));
 
+            int height = 0;
             int row = 1;
             while (sr.Peek() >= 0)
             {
@@ -921,6 +975,20 @@ namespace test1
                         break;
                     case 9:
                         this.SaveButton.Top = int.Parse(line);
+                        break;
+                    case 10:
+                        height = int.Parse(line);
+                        break;
+                    case 11:
+                        //Height、Widthプロパティには値型を直接入力できない
+                        //参考：http://www.atmarkit.co.jp/fdotnet/onepoint/onepoint02/onepoint02_01.html
+                        this.Size = new Size(int.Parse(line), height);
+                        break;
+                    case 12:
+                        this.DeleteButton.Left = int.Parse(line);
+                        break;
+                    case 13:
+                        this.DeleteButton.Top = int.Parse(line);
                         break;
                 }
                 row++;
@@ -972,15 +1040,8 @@ namespace test1
         }
         #endregion
 
-        /// <summary>
-        /// 他のコントロールクリック時に入力チェック
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dataGridView1_Leave(object sender, EventArgs e)
-        {
-            GridInputCheck();
-        }
+
+
     }
 }
 /*設計
