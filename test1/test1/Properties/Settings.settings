@@ -1,7 +1,15 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="test1.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="E0001" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">曜日を入力してください。</Value>
+    </Setting>
+    <Setting Name="E0002" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">半角数字を入力してください。</Value>
+    </Setting>
+    <Setting Name="I0001" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">開く画像ファイルを選択してください</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

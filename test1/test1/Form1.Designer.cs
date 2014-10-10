@@ -30,6 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WeekColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RestTime = new System.Windows.Forms.TextBox();
             this.RestTimeText = new System.Windows.Forms.Label();
             this.SaveButton = new System.Windows.Forms.Button();
@@ -44,11 +49,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.DeleteButton = new System.Windows.Forms.Button();
-            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.WeekColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -84,6 +84,39 @@
             this.dataGridView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseMove);
             this.dataGridView1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseUp);
             this.dataGridView1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.dataGridView1_PreviewKeyDown);
+            // 
+            // Check
+            // 
+            this.Check.FalseValue = "false";
+            this.Check.HeaderText = "";
+            this.Check.Name = "Check";
+            this.Check.TrueValue = "true";
+            this.Check.Width = 25;
+            // 
+            // Title
+            // 
+            this.Title.HeaderText = "タイトル";
+            this.Title.Name = "Title";
+            this.Title.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Title.Width = 80;
+            // 
+            // Time
+            // 
+            this.Time.HeaderText = "視聴時間(分)";
+            this.Time.Name = "Time";
+            // 
+            // WeekColumn
+            // 
+            this.WeekColumn.HeaderText = "放送曜日";
+            this.WeekColumn.Name = "WeekColumn";
+            this.WeekColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.WeekColumn.Width = 60;
+            // 
+            // ID
+            // 
+            this.ID.HeaderText = "ID";
+            this.ID.Name = "ID";
+            this.ID.Visible = false;
             // 
             // RestTime
             // 
@@ -211,9 +244,9 @@
             // 
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Image = global::test1.Properties.Resources.画像変更促し;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Location = new System.Drawing.Point(0, 26);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(489, 380);
+            this.pictureBox1.Size = new System.Drawing.Size(489, 354);
             this.pictureBox1.TabIndex = 11;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDoubleClick);
@@ -231,39 +264,6 @@
             this.DeleteButton.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DeleteButton_MouseMove);
             this.DeleteButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.DeleteButton_MouseUp);
             // 
-            // ID
-            // 
-            this.ID.HeaderText = "ID";
-            this.ID.Name = "ID";
-            this.ID.Visible = false;
-            // 
-            // WeekColumn
-            // 
-            this.WeekColumn.HeaderText = "放送曜日";
-            this.WeekColumn.Name = "WeekColumn";
-            this.WeekColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.WeekColumn.Width = 60;
-            // 
-            // Time
-            // 
-            this.Time.HeaderText = "視聴時間(分)";
-            this.Time.Name = "Time";
-            // 
-            // Title
-            // 
-            this.Title.HeaderText = "タイトル";
-            this.Title.Name = "Title";
-            this.Title.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Title.Width = 80;
-            // 
-            // Check
-            // 
-            this.Check.FalseValue = "false";
-            this.Check.HeaderText = "";
-            this.Check.Name = "Check";
-            this.Check.TrueValue = "true";
-            this.Check.Width = 25;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -273,15 +273,16 @@
             this.Controls.Add(this.DeleteButton);
             this.Controls.Add(this.AddButton);
             this.Controls.Add(this.SaveButton);
-            this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "アニメ視聴チェックリスト";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

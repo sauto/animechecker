@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Threading;
 using GridDatas;
+using test.DAndDSizeChanger;
 
 namespace test1
 {
@@ -254,6 +255,7 @@ namespace test1
             System.Xml.Serialization.XmlSerializer serializer =
                 new System.Xml.Serialization.XmlSerializer(typeof(AllData));
             System.IO.StreamWriter sw = new System.IO.StreamWriter(_dataFileName, false, System.Text.Encoding.GetEncoding("shift_jis"));
+
             serializer.Serialize(sw, obj);
             sw.Close();
         }
@@ -282,7 +284,7 @@ namespace test1
             //[ファイルの種類]ではじめに「すべてのファイル」が選択されているようにする
             ofd.FilterIndex = 2;
             //タイトルを設定する
-            ofd.Title = "開く画像ファイルを選択してください";
+            ofd.Title = test1.Properties.Settings.Default.I0001;
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -456,7 +458,7 @@ namespace test1
                                 }
                                 else
                                 {
-                                    MessageBox.Show("正しい値を入力してください。",
+                                    MessageBox.Show(test1.Properties.Settings.Default.E0002,
                                                     "エラー",MessageBoxButtons.OK,MessageBoxIcon.Error);
 
                                     if (FindDataFromID(row) != null)
@@ -486,7 +488,7 @@ namespace test1
                                 }
                                 else
                                 {
-                                    MessageBox.Show("正しい値を入力してください。",
+                                    MessageBox.Show(test1.Properties.Settings.Default.E0001,
                                                     "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                                     if (FindDataFromID(row) != null)
@@ -586,7 +588,12 @@ namespace test1
         private void DeleteButton_Click(object sender, EventArgs e)
         {
             if (dataGridView1.Rows.Count > 1)
+            {
                 dataGridView1.Rows.RemoveAt(_selectRow);
+                //最終行を削除した場合選択行のインデックスが変わらないのでエラーになるのを防止
+                if (_selectRow == dataGridView1.Rows.Count)
+                    _selectRow -= 1;
+            }
         }
 
         /// <summary>
@@ -623,11 +630,29 @@ namespace test1
                 point.X = e.X;
                 point.Y = e.Y;
             }
+            //else if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+            //{
+            //    isDraggable = true;
+            //    _lastMouseMovePoint.X = e.X;
+            //    _lastMouseMovePoint.Y = e.Y;
+            //    _lastMouseMoveSize = this.dataGridView1.Size;
+            //}
 
         }
 
+        Size _lastMouseMoveSize = new Size();
+        Point _lastMouseMovePoint = new Point();
         private void dataGridView1_MouseMove(object sender, MouseEventArgs e)
         {
+            //if (Math.Abs(this.dataGridView1.Size.Height - e.Y) < 10)
+            //{
+            //    this.dataGridView1.Cursor = Cursors.SizeNS;
+            //}
+            //else
+            //{
+            //    this.dataGridView1.Cursor = Cursors.Arrow;
+            //}
+
             if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
             {
                 if (!isDraggable || _isFixLayout)
@@ -638,6 +663,15 @@ namespace test1
                 this.dataGridView1.Left += e.X - point.X;
                 this.dataGridView1.Top += e.Y - point.Y;
             }
+            //else if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+            //{
+                
+            //    int diffY = _lastMouseMovePoint.Y - e.Y;
+
+            //        this.dataGridView1.Size =
+            //            new Size(this.dataGridView1.Size.Width,
+            //                _lastMouseMoveSize.Height - diffY);
+            //}
         }
 
         private void dataGridView1_MouseUp(object sender, MouseEventArgs e)
@@ -760,10 +794,8 @@ namespace test1
         {
             if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
             {
-                if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
-                {
-                    isDraggable = false;
-                }
+                isDraggable = false;
+                
             }
         }
 
@@ -925,7 +957,11 @@ namespace test1
             sw.Write(Environment.NewLine);
             sw.Write(this.DeleteButton.Top);
             sw.Write(Environment.NewLine);
-
+            //グリッドのサイズ
+            sw.Write(this.dataGridView1.Height);
+            sw.Write(Environment.NewLine);
+            sw.Write(this.dataGridView1.Width);
+            sw.Write(Environment.NewLine);
 
             sw.Close();
         }
@@ -990,6 +1026,12 @@ namespace test1
                     case 13:
                         this.DeleteButton.Top = int.Parse(line);
                         break;
+                    case 14:
+                        height = int.Parse(line);
+                        break;
+                    case 15:
+                        this.dataGridView1.Size = new Size(int.Parse(line), height);
+                        break;
                 }
                 row++;
             }
@@ -1039,6 +1081,12 @@ namespace test1
             RestoreLayout();
         }
         #endregion
+
+        DAndDSizeChanger sizeChanger;
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            sizeChanger = new DAndDSizeChanger(this.dataGridView1, this.dataGridView1, DAndDArea.All, 8);
+        }
 
 
 
