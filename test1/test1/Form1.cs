@@ -434,11 +434,11 @@ namespace test1
         }
 
         /// <summary>
-        /// セルの入力をチェック
+        /// セルの入力をチェック 行を指定することで余計なセルを検索しないようにできる
         /// </summary>
-        private bool GridInputCheck()
+        private bool GridInputCheck(int startRow = 0)
         {
-            for (int row = 0; row < this.dataGridView1.RowCount; row++)
+            for (int row = startRow; row < this.dataGridView1.RowCount; row++)
             {
                 for (int col = this.dataGridView1.Columns["Time"].Index; col <= this.dataGridView1.Columns["WeekColumn"].Index; col++)
                 {
@@ -474,6 +474,8 @@ namespace test1
                                     //セルを離れると元に戻る
                                     this.dataGridView1.RefreshEdit();
 
+                                    RestTimeDisplay();
+
                                     return false;
                                 }
                             }
@@ -503,8 +505,8 @@ namespace test1
                                     //これがないと入力→列先頭クリックしてエラーだしても値が元に戻らず
                                     //セルを離れると元に戻る
                                     this.dataGridView1.RefreshEdit();
-                                    
 
+                                    RestTimeDisplay();
                                     return false;
                                 }
                                 
@@ -1087,6 +1089,107 @@ namespace test1
         {
             sizeChanger = new DAndDSizeChanger(this.dataGridView1, this.dataGridView1, DAndDArea.All, 8);
         }
+
+        private void AllCheckOFFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            for(int row=0;row<this.dataGridView1.RowCount;row++)
+            {
+                this.dataGridView1[this.dataGridView1.Columns["Check"].Index, row].Value = false;
+            }
+            this.dataGridView1.RefreshEdit();
+            RestTimeDisplay();
+        }
+
+
+        private void dataGridView1_KeyDown(object sender, KeyEventArgs e)
+        {
+
+            //セルペースト　
+            if (e.Control && e.KeyCode == Keys.V)
+            {
+                if (this.dataGridView1.CurrentCell == null || this.dataGridView1.CurrentCell.Value == null)
+                    return;
+
+                string pasteText = Clipboard.GetText();
+                if (string.IsNullOrEmpty(pasteText))
+                    return;
+                pasteText = pasteText.Replace("\r\n", "\n");
+                pasteText = pasteText.Replace('\r', '\n');
+                pasteText = pasteText.TrimStart(new char[] { '\t' });//行コピー時ヘッダのタブ文字削除
+                pasteText = pasteText.TrimEnd(new char[] { '\n' });
+
+
+                int colCount = 0;
+                int rowCount = 0;
+                string[] rowParts = pasteText.Split('\n');//Lengthが行数
+                //コピーセル格納配列
+                object[,] array = new object[this.dataGridView1.ColumnCount - 1, rowParts.Length];
+
+                for (int row = 0; row < rowParts.Length; row++)
+                {
+                    string[] colParts = rowParts[row].Split('\t');
+
+                    for (int col = 0; col < colParts.Length; col++)
+                    {
+                        array[col,row] = colParts[col];
+                    }
+                }
+
+
+
+                    ////改行の度に行カウントを増加、タブ文字の度に列カウント増加
+                    ////Splitしても各値が改行とタブ文字のどっちで区切ったかわからん
+                    //for (int i = 0; i < pasteText.Length; i++)
+                    //{
+                    //    if (pasteText[i] == '\n')
+                    //    {
+                    //        rowCount++;
+                    //    }
+                    //    else if (pasteText[i] == '\t')
+                    //    {
+                    //        colCount++;
+                    //    }
+                    //}
+
+                //カレントセルを起点として取得
+                //そこをforの起点として順次入れていく　途中でエラーしたらそれまでをどうやって戻す？データリストから再生
+
+
+                if (this.dataGridView1.CurrentCell.ColumnIndex == this.dataGridView1.Columns["Check"].Index)
+                {
+                    bool result;
+                    bool.TryParse(pasteText, out result);
+                    this.dataGridView1.CurrentCell.Value = result;
+                    this.dataGridView1.RefreshEdit();
+                }
+                else if (this.dataGridView1.CurrentCell.ColumnIndex == this.dataGridView1.Columns["Title"].Index)
+                {
+                    this.dataGridView1.CurrentCell.Value = pasteText;
+                }
+                else if (this.dataGridView1.CurrentCell.ColumnIndex == this.dataGridView1.Columns["Time"].Index)
+                {
+                    int result;
+                    if (int.TryParse(pasteText, out result))
+                        this.dataGridView1.CurrentCell.Value = result;
+                    else
+                        MessageBox.Show(test1.Properties.Settings.Default.E0002,
+                                                    "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else if (this.dataGridView1.CurrentCell.ColumnIndex == this.dataGridView1.Columns["WeekColumn"].Index)
+                {
+                    if (Enum.IsDefined(typeof(DayOfWeek), this.dataGridView1.CurrentCell.Value.ToString()))
+                    {
+                        this.dataGridView1.CurrentCell.Value = Enum.Parse(typeof(DayOfWeek), pasteText);
+                    }
+                    else
+                        MessageBox.Show(test1.Properties.Settings.Default.E0001,
+                                                    "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                GridInputCheck();
+            }
+        }
+
 
 
 

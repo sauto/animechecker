@@ -46,6 +46,7 @@
             this.オプションToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InitLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FixLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AllCheckOFFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.DeleteButton = new System.Windows.Forms.Button();
@@ -79,6 +80,7 @@
             this.dataGridView1.CurrentCellChanged += new System.EventHandler(this.dataGridView1_CurrentCellChanged);
             this.dataGridView1.CurrentCellDirtyStateChanged += new System.EventHandler(this.dataGridView1_CurrentCellDirtyStateChanged);
             this.dataGridView1.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridView1_EditingControlShowing);
+            this.dataGridView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView1_KeyDown);
             this.dataGridView1.Leave += new System.EventHandler(this.dataGridView1_Leave);
             this.dataGridView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseDown);
             this.dataGridView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseMove);
@@ -209,7 +211,8 @@
             // 
             this.オプションToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.InitLayoutToolStripMenuItem,
-            this.FixLayoutToolStripMenuItem});
+            this.FixLayoutToolStripMenuItem,
+            this.AllCheckOFFToolStripMenuItem});
             this.オプションToolStripMenuItem.Name = "オプションToolStripMenuItem";
             this.オプションToolStripMenuItem.Size = new System.Drawing.Size(80, 22);
             this.オプションToolStripMenuItem.Text = "オプション";
@@ -217,16 +220,26 @@
             // InitLayoutToolStripMenuItem
             // 
             this.InitLayoutToolStripMenuItem.Name = "InitLayoutToolStripMenuItem";
-            this.InitLayoutToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.InitLayoutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.InitLayoutToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
             this.InitLayoutToolStripMenuItem.Text = "レイアウトリセット";
             this.InitLayoutToolStripMenuItem.Click += new System.EventHandler(this.InitLayoutToolStripMenuItem_Click);
             // 
             // FixLayoutToolStripMenuItem
             // 
             this.FixLayoutToolStripMenuItem.Name = "FixLayoutToolStripMenuItem";
-            this.FixLayoutToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.FixLayoutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.FixLayoutToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
             this.FixLayoutToolStripMenuItem.Text = "レイアウトの固定";
             this.FixLayoutToolStripMenuItem.Click += new System.EventHandler(this.FixLayoutToolStripMenuItem_Click);
+            // 
+            // AllCheckOFFToolStripMenuItem
+            // 
+            this.AllCheckOFFToolStripMenuItem.Name = "AllCheckOFFToolStripMenuItem";
+            this.AllCheckOFFToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.AllCheckOFFToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.AllCheckOFFToolStripMenuItem.Text = "全てのチェックを外す";
+            this.AllCheckOFFToolStripMenuItem.Click += new System.EventHandler(this.AllCheckOFFToolStripMenuItem_Click);
             // 
             // panel1
             // 
@@ -316,6 +329,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Time;
         private System.Windows.Forms.DataGridViewTextBoxColumn WeekColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn ID;
+        private System.Windows.Forms.ToolStripMenuItem AllCheckOFFToolStripMenuItem;
 
     }
 }

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // アセンブリに関する一般情報は以下の属性セットをとおして制御されます。
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
-[assembly: AssemblyTitle("test1")]
+[assembly: AssemblyTitle("AnimeChecker")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("test1")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2014")]
+[assembly: AssemblyProduct("AnimeChecker")]
+[assembly: AssemblyCopyright("Copyright © 2014 by sauto")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
