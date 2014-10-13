@@ -11,5 +11,8 @@
     <Setting Name="I0001" Type="System.String" Scope="Application">
       <Value Profile="(Default)">開く画像ファイルを選択してください</Value>
     </Setting>
+    <Setting Name="E0003" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">正しい値を入力してください。</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

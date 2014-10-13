@@ -603,6 +603,7 @@ namespace test1
         /// </summary>
         int _selectRow = 0;
 
+        List<Point> _rowAndColList = new List<Point>();
         /// <summary>
         /// 現在選択中の行を取得
         /// </summary>
@@ -611,6 +612,13 @@ namespace test1
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             _selectRow = e.RowIndex;
+
+            //ctrlおしっぱのときセルを取得
+            if(_pressCtrlFlag)
+            {
+                _rowAndColList.Add(new Point(e.ColumnIndex, e.RowIndex));
+            }
+
         }
 
         #region コントロールの移動イベント
@@ -1100,11 +1108,24 @@ namespace test1
             RestTimeDisplay();
         }
 
-
+        bool _pressCtrlFlag = false;
         private void dataGridView1_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Control)
+                _pressCtrlFlag = true;
 
-            //セルペースト　
+            ////コピー
+            //if (e.Control && e.KeyCode == Keys.C)
+            //{
+            //    //全部同じ行または全部同じ列、以外の場合コピー不可　
+            //    if (_rowAndColList.TrueForAll(s => s.X == _rowAndColList[0].X) 
+            //        || _rowAndColList.TrueForAll(s => s.Y == _rowAndColList[0].Y))
+            //    {
+
+            //    }
+            //}
+
+            //ペースト　
             if (e.Control && e.KeyCode == Keys.V)
             {
                 if (this.dataGridView1.CurrentCell == null || this.dataGridView1.CurrentCell.Value == null)
@@ -1119,78 +1140,166 @@ namespace test1
                 pasteText = pasteText.TrimEnd(new char[] { '\n' });
 
 
-                int colCount = 0;
-                int rowCount = 0;
                 string[] rowParts = pasteText.Split('\n');//Lengthが行数
-                //コピーセル格納配列
-                object[,] array = new object[this.dataGridView1.ColumnCount - 1, rowParts.Length];
 
-                for (int row = 0; row < rowParts.Length; row++)
+                //タブ文字を挿入して表が作れるようにする　カレントセルの列の分だけタブ文字を追加することでnullマスを先頭に追加
+                string tabString = string.Empty;
+                for (int i = 0; i < this.dataGridView1.CurrentCell.ColumnIndex; i++)
                 {
-                    string[] colParts = rowParts[row].Split('\t');
+                    tabString += "\t";
+                }
+                for (int i = 0; i < rowParts.Length; i++)
+                {
+                    //Insert(0だとできない　先頭や終端に挿入する場合は連結演算子の方が早いらしい
+                    //http://www.dotnetperls.com/insert
+                    string temp = tabString;
+                    temp += rowParts[i];
+                    rowParts[i] = temp;
+                }
+
+
+                //コピーセル格納配列
+                string[,] array = new string[this.dataGridView1.ColumnCount, this.dataGridView1.RowCount];
+
+                //カレントセルを基準として一番列数が多いセルに合わせてタブ文字が増える　金\n\t30\t\n遊戯王\t\t
+                //異なる行列を選択した場合コピーは受け付けない
+                
+                int maxEnableCopyRow = this.dataGridView1.RowCount - this.dataGridView1.CurrentCell.RowIndex;
+                int pasteRange = 0;
+                if (rowParts.Length <= maxEnableCopyRow)
+                    pasteRange = rowParts.Length;
+                else
+                    pasteRange = maxEnableCopyRow;
+
+                int copyRow = 0;
+                for (int row = this.dataGridView1.CurrentCell.RowIndex; 
+                    row < this.dataGridView1.CurrentCell.RowIndex + pasteRange; 
+                    row++)
+                {
+                    string[] colParts = rowParts[copyRow].Split('\t');
 
                     for (int col = 0; col < colParts.Length; col++)
                     {
                         array[col,row] = colParts[col];
                     }
+                    copyRow++;
                 }
 
+                
 
-
-                    ////改行の度に行カウントを増加、タブ文字の度に列カウント増加
-                    ////Splitしても各値が改行とタブ文字のどっちで区切ったかわからん
-                    //for (int i = 0; i < pasteText.Length; i++)
-                    //{
-                    //    if (pasteText[i] == '\n')
-                    //    {
-                    //        rowCount++;
-                    //    }
-                    //    else if (pasteText[i] == '\t')
-                    //    {
-                    //        colCount++;
-                    //    }
-                    //}
-
+                bool breakFlag = false;
                 //カレントセルを起点として取得
                 //そこをforの起点として順次入れていく　途中でエラーしたらそれまでをどうやって戻す？データリストから再生
+                for (int row = 0; row < this.dataGridView1.RowCount; row++)
+                {
+                    if (breakFlag)
+                        break;
 
-
-                if (this.dataGridView1.CurrentCell.ColumnIndex == this.dataGridView1.Columns["Check"].Index)
-                {
-                    bool result;
-                    bool.TryParse(pasteText, out result);
-                    this.dataGridView1.CurrentCell.Value = result;
-                    this.dataGridView1.RefreshEdit();
-                }
-                else if (this.dataGridView1.CurrentCell.ColumnIndex == this.dataGridView1.Columns["Title"].Index)
-                {
-                    this.dataGridView1.CurrentCell.Value = pasteText;
-                }
-                else if (this.dataGridView1.CurrentCell.ColumnIndex == this.dataGridView1.Columns["Time"].Index)
-                {
-                    int result;
-                    if (int.TryParse(pasteText, out result))
-                        this.dataGridView1.CurrentCell.Value = result;
-                    else
-                        MessageBox.Show(test1.Properties.Settings.Default.E0002,
-                                                    "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                else if (this.dataGridView1.CurrentCell.ColumnIndex == this.dataGridView1.Columns["WeekColumn"].Index)
-                {
-                    if (Enum.IsDefined(typeof(DayOfWeek), this.dataGridView1.CurrentCell.Value.ToString()))
+                    for (int col = 0; col < this.dataGridView1.ColumnCount; col++)
                     {
-                        this.dataGridView1.CurrentCell.Value = Enum.Parse(typeof(DayOfWeek), pasteText);
+                        if (!string.IsNullOrEmpty(array[col, row]))
+                        {
+                            if (!PasteValidCheck(col, row, array))
+                            {
+                                breakFlag = true;
+                                break;
+                            }
+                        }
                     }
-                    else
-                        MessageBox.Show(test1.Properties.Settings.Default.E0001,
-                                                    "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                if(breakFlag)
+                {
+                    for (int row = 0; row < this.dataGridView1.RowCount; row++)
+                    {
+                        for (int col = 0; col < this.dataGridView1.ColumnCount; col++)
+                        {
+                            switch (col)
+                            {
+                                case 0:
+                                    this.dataGridView1[col, row].Value = _allData.dataList[row].Check;
+                                    break;
+                                case 1:
+                                    this.dataGridView1[col, row].Value = _allData.dataList[row].Title;
+                                    break;
+                                case 2:
+                                    this.dataGridView1[col, row].Value = _allData.dataList[row].Time;
+                                    break;
+                                case 3:
+                                    this.dataGridView1[col, row].Value = _allData.dataList[row].Day;
+                                    break;
+                                case 4:
+                                    this.dataGridView1[col, row].Value = _allData.dataList[row].ID;
+                                    break;
+                            }
+                        }
+                    }
                 }
 
                 GridInputCheck();
             }
         }
 
+        bool PasteValidCheck(int col, int row, string[,] array)
+        {
+            if (col == this.dataGridView1.Columns["Check"].Index)
+            {
+                bool result;
+                if (bool.TryParse(array[col, row], out result))
+                {
+                    this.dataGridView1[col, row].Value = result;
+                    this.dataGridView1.RefreshEdit();
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show(test1.Properties.Settings.Default.E0003,
+                                                "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            else if (col == this.dataGridView1.Columns["Title"].Index)
+            {
+                this.dataGridView1[col, row].Value = array[col, row];
+            }
+            else if (col == this.dataGridView1.Columns["Time"].Index)
+            {
+                int result;
+                if (int.TryParse(array[col, row], out result))
+                {
+                    this.dataGridView1[col, row].Value = result;
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show(test1.Properties.Settings.Default.E0002,
+                                                "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            else if (col == this.dataGridView1.Columns["WeekColumn"].Index)
+            {
+                if (Enum.IsDefined(typeof(DayOfWeek), array[col, row]))
+                {
+                    this.dataGridView1[col, row].Value = 
+                        Enum.Parse(typeof(DayOfWeek), array[col, row]);
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show(test1.Properties.Settings.Default.E0001,
+                                                "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return true;
+        }
 
+        private void dataGridView1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(!e.Control)
+                _pressCtrlFlag = false;
+        }
 
 
     }

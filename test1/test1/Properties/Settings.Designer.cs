@@ -49,5 +49,14 @@ namespace test1.Properties {
                 return ((string)(this["I0001"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("正しい値を入力してください。")]
+        public string E0003 {
+            get {
+                return ((string)(this["E0003"]));
+            }
+        }
     }
 }
