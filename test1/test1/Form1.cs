@@ -44,6 +44,15 @@ namespace test1
             日
         }
 
+        enum ColumnName
+        {
+            Check = 0,
+            Title,
+            Time,
+            Day,
+            ID
+        }
+
         public Form1()
         {
             InitializeComponent();
@@ -69,7 +78,7 @@ namespace test1
                 //行の追加
                 foreach (Data data in _allData.dataList)
                 {
-                    this.dataGridView1.Rows.Add(false, data.Title, data.Time,data.Day,data.ID);
+                    this.dataGridView1.Rows.Add(data.Check, data.Title, data.Time,data.Day,data.ID);
                     int.TryParse(data.Time, out time);
                     summary += time;
                 }
@@ -117,31 +126,31 @@ namespace test1
                 {
                     switch (col)
                     {
-                        case 0:
+                        case (int)ColumnName.Check:
                             if (this.dataGridView1[col, row].Value != null)
                                 data.Check = this.dataGridView1[col, row].Value.ToString();
                             else
                                 data.Check = false.ToString();
                             break;
-                        case 1:
+                        case (int)ColumnName.Title:
                             if (this.dataGridView1[col, row].Value != null)
                                 data.Title = this.dataGridView1[col, row].Value.ToString();
                             else
                                 data.Title = string.Empty;
                             break;
-                        case 2:
+                        case (int)ColumnName.Time:
                             if (this.dataGridView1[col, row].Value != null)
                                 data.Time = this.dataGridView1[col, row].Value.ToString();
                             else
                                 data.Time = string.Empty;
                             break;
-                        case 3:
+                        case (int)ColumnName.Day:
                             if (this.dataGridView1[col, row].Value != null)
                                 data.Day = this.dataGridView1[col, row].Value.ToString();
                             else
                                 data.Day = string.Empty;
                             break;
-                        case 4:
+                        case (int)ColumnName.ID:
                             if (this.dataGridView1[col, row].Value != null)
                                 data.ID = this.dataGridView1[col, row].Value.ToString();
                             else
@@ -444,7 +453,7 @@ namespace test1
                 {
                     switch (col)
                     {
-                        case 2:
+                        case (int)ColumnName.Time:
                             //空白入力時と異常値入力時の空白入力時を回避
                             if (this.dataGridView1[col, row].Value != null &&
                                 !string.IsNullOrEmpty(this.dataGridView1[col, row].Value.ToString()))
@@ -480,7 +489,7 @@ namespace test1
                                 }
                             }
                             break;
-                        case 3:
+                        case (int)ColumnName.Day:
                             if (this.dataGridView1[col, row].Value != null &&
                                 !string.IsNullOrEmpty(this.dataGridView1[col, row].Value.ToString()))
                             {
@@ -603,7 +612,6 @@ namespace test1
         /// </summary>
         int _selectRow = 0;
 
-        List<Point> _rowAndColList = new List<Point>();
         /// <summary>
         /// 現在選択中の行を取得
         /// </summary>
@@ -612,13 +620,6 @@ namespace test1
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             _selectRow = e.RowIndex;
-
-            //ctrlおしっぱのときセルを取得
-            if(_pressCtrlFlag)
-            {
-                _rowAndColList.Add(new Point(e.ColumnIndex, e.RowIndex));
-            }
-
         }
 
         #region コントロールの移動イベント
@@ -1092,10 +1093,10 @@ namespace test1
         }
         #endregion
 
-        DAndDSizeChanger sizeChanger;
+        DAndDSizeChanger _sizeChanger;
         private void Form1_Load(object sender, EventArgs e)
         {
-            sizeChanger = new DAndDSizeChanger(this.dataGridView1, this.dataGridView1, DAndDArea.All, 8);
+            _sizeChanger = new DAndDSizeChanger(this.dataGridView1, this.dataGridView1, DAndDArea.All, 8);
         }
 
         private void AllCheckOFFToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1108,36 +1109,80 @@ namespace test1
             RestTimeDisplay();
         }
 
-        bool _pressCtrlFlag = false;
         private void dataGridView1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control)
-                _pressCtrlFlag = true;
+            #region コピー
+            List<Point> rowAndColList = new List<Point>();
+            List<int> copyRowList = new List<int>();
+            List<int> copyColumnList = new List<int>();
 
-            ////コピー
-            //if (e.Control && e.KeyCode == Keys.C)
-            //{
-            //    //全部同じ行または全部同じ列、以外の場合コピー不可　
-            //    if (_rowAndColList.TrueForAll(s => s.X == _rowAndColList[0].X) 
-            //        || _rowAndColList.TrueForAll(s => s.Y == _rowAndColList[0].Y))
-            //    {
+            //コピー
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                var cells = this.dataGridView1.SelectedCells;
+                foreach (DataGridViewCell cell in cells)
+                {
+                    rowAndColList.Add(new Point(cell.RowIndex, cell.ColumnIndex));
+                    int b = copyColumnList.Find(s => s == cell.ColumnIndex);
+                    if (copyColumnList.Count == 0 || !copyColumnList.Contains(cell.ColumnIndex))
+                    {
+                        copyColumnList.Add(cell.ColumnIndex);
+                    }
+                    if (copyRowList.Count == 0 || !copyRowList.Contains(cell.RowIndex))
+                    {
+                        copyRowList.Add(cell.RowIndex);
+                    }
+                }
+                int copyRangeColumn = copyColumnList.Count;
+                int copyRangeRow = copyRowList.Count;
+                bool validCopyFlag = true;
 
-            //    }
-            //}
+                //全てのXがコピーした列数分だけ存在するか、すべてのYがコピーした行数分だけ存在する
+                foreach(var y in copyColumnList)
+                {
+                    validCopyFlag = true;
+                    if(rowAndColList.FindAll(s=>s.Y == y).Count != copyRangeRow)
+                    {
+                        validCopyFlag = false;
+                        break;
+                    }
+                }
+                foreach (var x in copyRowList)
+                {
+                    validCopyFlag = true;
+                    if (rowAndColList.FindAll(s => s.X == x).Count != copyRangeColumn)
+                    {
+                        validCopyFlag = false;
+                        break;
+                    }
+                }
+                if(!validCopyFlag)
+                {
+                    MessageBox.Show(test1.Properties.Settings.Default.E0004,
+                                                "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
-            //ペースト　
+            }
+            #endregion
+
+            #region ペースト
+
             if (e.Control && e.KeyCode == Keys.V)
             {
                 if (this.dataGridView1.CurrentCell == null || this.dataGridView1.CurrentCell.Value == null)
                     return;
 
                 string pasteText = Clipboard.GetText();
+
                 if (string.IsNullOrEmpty(pasteText))
                     return;
+
+                //改行を統一
                 pasteText = pasteText.Replace("\r\n", "\n");
                 pasteText = pasteText.Replace('\r', '\n');
                 pasteText = pasteText.TrimStart(new char[] { '\t' });//行コピー時ヘッダのタブ文字削除
-                pasteText = pasteText.TrimEnd(new char[] { '\n' });
+                pasteText = pasteText.TrimEnd(new char[] { '\n' });//終端の改行削除
 
 
                 string[] rowParts = pasteText.Split('\n');//Lengthが行数
@@ -1150,13 +1195,12 @@ namespace test1
                 }
                 for (int i = 0; i < rowParts.Length; i++)
                 {
-                    //Insert(0だとできない　先頭や終端に挿入する場合は連結演算子の方が早いらしい
+                    //Insert(0,value)だとできない　先頭や終端に挿入する場合は連結演算子の方が早いらしい
                     //http://www.dotnetperls.com/insert
                     string temp = tabString;
                     temp += rowParts[i];
                     rowParts[i] = temp;
                 }
-
 
                 //コピーセル格納配列
                 string[,] array = new string[this.dataGridView1.ColumnCount, this.dataGridView1.RowCount];
@@ -1166,10 +1210,8 @@ namespace test1
                 
                 int maxEnableCopyRow = this.dataGridView1.RowCount - this.dataGridView1.CurrentCell.RowIndex;
                 int pasteRange = 0;
-                if (rowParts.Length <= maxEnableCopyRow)
-                    pasteRange = rowParts.Length;
-                else
-                    pasteRange = maxEnableCopyRow;
+
+                pasteRange = rowParts.Length <= maxEnableCopyRow ? rowParts.Length : maxEnableCopyRow;
 
                 int copyRow = 0;
                 for (int row = this.dataGridView1.CurrentCell.RowIndex; 
@@ -1189,7 +1231,7 @@ namespace test1
 
                 bool breakFlag = false;
                 //カレントセルを起点として取得
-                //そこをforの起点として順次入れていく　途中でエラーしたらそれまでをどうやって戻す？データリストから再生
+                //そこをforの起点として順次入れていく　途中でエラーしたらデータリストから再生
                 for (int row = 0; row < this.dataGridView1.RowCount; row++)
                 {
                     if (breakFlag)
@@ -1216,19 +1258,19 @@ namespace test1
                         {
                             switch (col)
                             {
-                                case 0:
+                                case (int)ColumnName.Check:
                                     this.dataGridView1[col, row].Value = _allData.dataList[row].Check;
                                     break;
-                                case 1:
+                                case (int)ColumnName.Title:
                                     this.dataGridView1[col, row].Value = _allData.dataList[row].Title;
                                     break;
-                                case 2:
+                                case (int)ColumnName.Time:
                                     this.dataGridView1[col, row].Value = _allData.dataList[row].Time;
                                     break;
-                                case 3:
+                                case (int)ColumnName.Day:
                                     this.dataGridView1[col, row].Value = _allData.dataList[row].Day;
                                     break;
-                                case 4:
+                                case (int)ColumnName.ID:
                                     this.dataGridView1[col, row].Value = _allData.dataList[row].ID;
                                     break;
                             }
@@ -1236,9 +1278,13 @@ namespace test1
                     }
                 }
 
-                GridInputCheck();
+                GridInputCheck(this.dataGridView1.CurrentCell.RowIndex);
             }
+            #endregion
         }
+
+
+
 
         bool PasteValidCheck(int col, int row, string[,] array)
         {
@@ -1293,12 +1339,6 @@ namespace test1
                 }
             }
             return true;
-        }
-
-        private void dataGridView1_KeyUp(object sender, KeyEventArgs e)
-        {
-            if(!e.Control)
-                _pressCtrlFlag = false;
         }
 
 

@@ -58,5 +58,14 @@ namespace test1.Properties {
                 return ((string)(this["E0003"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("そのコマンドは複数の選択範囲に対して実行できません。")]
+        public string E0004 {
+            get {
+                return ((string)(this["E0004"]));
+            }
+        }
     }
 }
