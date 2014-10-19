@@ -35,13 +35,13 @@ namespace test1
 
         enum DayOfWeek
         {
-            月 = 0,
+            日 = 0,
+            月,
             火,
             水,
             木,
             金,
             土,
-            日
         }
 
         enum ColumnName
@@ -49,8 +49,9 @@ namespace test1
             Check = 0,
             Title,
             Time,
-            Day,
-            ID
+            DayOfWeek,
+            ID,
+            Limit
         }
 
         public Form1()
@@ -144,7 +145,7 @@ namespace test1
                             else
                                 data.Time = string.Empty;
                             break;
-                        case (int)ColumnName.Day:
+                        case (int)ColumnName.DayOfWeek:
                             if (this.dataGridView1[col, row].Value != null)
                                 data.Day = this.dataGridView1[col, row].Value.ToString();
                             else
@@ -176,11 +177,16 @@ namespace test1
             //CellContentClickはダブルクリックに反応しない
 
             RestTimeDisplay();
+
+            CellColorChangeByCheck(e.ColumnIndex, e.RowIndex);
+
         }
 
         private void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             RestTimeDisplay();
+
+            CellColorChangeByCheck(e.ColumnIndex,e.RowIndex);
         }
 
         /// <summary>
@@ -210,6 +216,37 @@ namespace test1
             RestTime.Text = (summary / 60).ToString() + "時間" + (summary % 60).ToString() + "分";
         }
 
+        /// <summary>
+        /// チェックボックスの値に応じて視聴期限セルを黒く塗りつぶす
+        /// </summary>
+        /// <param name="col"></param>
+        /// <param name="row"></param>
+        void CellColorChangeByCheck(int col,int row)
+        {
+            if (col == (int)ColumnName.Check && row >= 0)
+            {
+                bool check;
+                bool.TryParse(this.dataGridView1[col, row].Value.ToString(), out check);
+                if (check)
+                {
+                    this.dataGridView1[(int)ColumnName.Limit, row].Style.BackColor = Color.Black;
+                }
+                else
+                {
+                    this.dataGridView1[(int)ColumnName.Limit, row].Style.BackColor = Color.White;
+                }
+            }
+        }
+
+        /// <summary>
+        /// ソート時にセル塗りつぶしが追従しないのを防止（全削除しているため）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGridView1_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+            CellColorChangeByCheck((int)ColumnName.Check, e.RowIndex);
+        }
 
         /// <summary>
         /// Dirty受ける用
@@ -364,6 +401,10 @@ namespace test1
             }
 
             RestTimeDisplay();
+
+
+            GridInputCheck();
+　
         }
 
         /// <summary>
@@ -489,13 +530,17 @@ namespace test1
                                 }
                             }
                             break;
-                        case (int)ColumnName.Day:
+                        case (int)ColumnName.DayOfWeek:
                             if (this.dataGridView1[col, row].Value != null &&
                                 !string.IsNullOrEmpty(this.dataGridView1[col, row].Value.ToString()))
                             {
                                 if (Enum.IsDefined(typeof(DayOfWeek), this.dataGridView1[col, row].Value.ToString()))
                                 {
-                                    
+                                    //視聴期限算出　残り0日の場合は残り7日にする
+                                    int limit = (int)((DayOfWeek)Enum.Parse(typeof(DayOfWeek), this.dataGridView1[col, row].Value.ToString()))
+                                         - (int)DateTime.Today.DayOfWeek + 7;
+
+                                    this.dataGridView1[(int)ColumnName.Limit, row].Value = "あと" + ((limit % 7 == 0 ? 7 : 0) + (limit % 7)) + "日";
                                 }
                                 else
                                 {
@@ -1267,7 +1312,7 @@ namespace test1
                                 case (int)ColumnName.Time:
                                     this.dataGridView1[col, row].Value = _allData.dataList[row].Time;
                                     break;
-                                case (int)ColumnName.Day:
+                                case (int)ColumnName.DayOfWeek:
                                     this.dataGridView1[col, row].Value = _allData.dataList[row].Day;
                                     break;
                                 case (int)ColumnName.ID:
@@ -1340,6 +1385,7 @@ namespace test1
             }
             return true;
         }
+
 
 
     }
