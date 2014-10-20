@@ -30,6 +30,12 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WeekColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Limit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RestTime = new System.Windows.Forms.TextBox();
             this.RestTimeText = new System.Windows.Forms.Label();
             this.SaveButton = new System.Windows.Forms.Button();
@@ -45,12 +51,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.DeleteButton = new System.Windows.Forms.Button();
-            this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.WeekColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Limit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -85,10 +85,49 @@
             this.dataGridView1.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView1_RowsAdded);
             this.dataGridView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView1_KeyDown);
             this.dataGridView1.Leave += new System.EventHandler(this.dataGridView1_Leave);
-            this.dataGridView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseDown);
-            this.dataGridView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseMove);
-            this.dataGridView1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseUp);
             this.dataGridView1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.dataGridView1_PreviewKeyDown);
+            // 
+            // Check
+            // 
+            this.Check.FalseValue = "false";
+            this.Check.Frozen = true;
+            this.Check.HeaderText = "";
+            this.Check.Name = "Check";
+            this.Check.TrueValue = "true";
+            this.Check.Width = 25;
+            // 
+            // Title
+            // 
+            this.Title.Frozen = true;
+            this.Title.HeaderText = "タイトル";
+            this.Title.Name = "Title";
+            this.Title.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Title.Width = 80;
+            // 
+            // Time
+            // 
+            this.Time.HeaderText = "視聴時間(分)";
+            this.Time.Name = "Time";
+            // 
+            // WeekColumn
+            // 
+            this.WeekColumn.HeaderText = "放送曜日";
+            this.WeekColumn.Name = "WeekColumn";
+            this.WeekColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.WeekColumn.Width = 60;
+            // 
+            // ID
+            // 
+            this.ID.HeaderText = "ID";
+            this.ID.Name = "ID";
+            this.ID.Visible = false;
+            // 
+            // Limit
+            // 
+            this.Limit.HeaderText = "視聴期限";
+            this.Limit.Name = "Limit";
+            this.Limit.ReadOnly = true;
+            this.Limit.Width = 80;
             // 
             // RestTime
             // 
@@ -97,9 +136,6 @@
             this.RestTime.ReadOnly = true;
             this.RestTime.Size = new System.Drawing.Size(100, 19);
             this.RestTime.TabIndex = 5;
-            this.RestTime.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RestTime_MouseDown);
-            this.RestTime.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RestTime_MouseMove);
-            this.RestTime.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RestTime_MouseUp);
             // 
             // RestTimeText
             // 
@@ -110,9 +146,6 @@
             this.RestTimeText.TabIndex = 6;
             this.RestTimeText.Text = "残り時間";
             this.RestTimeText.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.RestTimeText.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RestTimeText_MouseDown);
-            this.RestTimeText.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RestTimeText_MouseMove);
-            this.RestTimeText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RestTimeText_MouseUp);
             // 
             // SaveButton
             // 
@@ -123,9 +156,6 @@
             this.SaveButton.Text = "保存";
             this.SaveButton.UseVisualStyleBackColor = true;
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
-            this.SaveButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SaveButton_MouseDown);
-            this.SaveButton.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SaveButton_MouseMove);
-            this.SaveButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.SaveButton_MouseUp);
             // 
             // AddButton
             // 
@@ -136,9 +166,6 @@
             this.AddButton.Text = "行の追加";
             this.AddButton.UseVisualStyleBackColor = true;
             this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
-            this.AddButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AddButton_MouseDown);
-            this.AddButton.MouseMove += new System.Windows.Forms.MouseEventHandler(this.AddButton_MouseMove);
-            this.AddButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AddButton_MouseUp);
             // 
             // menuStrip1
             // 
@@ -201,6 +228,7 @@
             this.FixLayoutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
             this.FixLayoutToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
             this.FixLayoutToolStripMenuItem.Text = "レイアウトの固定";
+            this.FixLayoutToolStripMenuItem.CheckedChanged += new System.EventHandler(this.FixLayoutToolStripMenuItem_CheckedChanged);
             this.FixLayoutToolStripMenuItem.Click += new System.EventHandler(this.FixLayoutToolStripMenuItem_Click);
             // 
             // AllCheckOFFToolStripMenuItem
@@ -219,9 +247,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(187, 23);
             this.panel1.TabIndex = 12;
-            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
-            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
-            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
             // 
             // pictureBox1
             // 
@@ -243,51 +268,6 @@
             this.DeleteButton.Text = "選択行の削除";
             this.DeleteButton.UseVisualStyleBackColor = true;
             this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
-            this.DeleteButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DeleteButton_MouseDown);
-            this.DeleteButton.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DeleteButton_MouseMove);
-            this.DeleteButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.DeleteButton_MouseUp);
-            // 
-            // Check
-            // 
-            this.Check.FalseValue = "false";
-            this.Check.Frozen = true;
-            this.Check.HeaderText = "";
-            this.Check.Name = "Check";
-            this.Check.TrueValue = "true";
-            this.Check.Width = 25;
-            // 
-            // Title
-            // 
-            this.Title.Frozen = true;
-            this.Title.HeaderText = "タイトル";
-            this.Title.Name = "Title";
-            this.Title.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Title.Width = 80;
-            // 
-            // Time
-            // 
-            this.Time.HeaderText = "視聴時間(分)";
-            this.Time.Name = "Time";
-            // 
-            // WeekColumn
-            // 
-            this.WeekColumn.HeaderText = "放送曜日";
-            this.WeekColumn.Name = "WeekColumn";
-            this.WeekColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.WeekColumn.Width = 60;
-            // 
-            // ID
-            // 
-            this.ID.HeaderText = "ID";
-            this.ID.Name = "ID";
-            this.ID.Visible = false;
-            // 
-            // Limit
-            // 
-            this.Limit.HeaderText = "視聴期限";
-            this.Limit.Name = "Limit";
-            this.Limit.ReadOnly = true;
-            this.Limit.Width = 80;
             // 
             // Form1
             // 
