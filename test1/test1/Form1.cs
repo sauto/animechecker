@@ -34,7 +34,7 @@ namespace test1
         List<Point> _defaultLocationList = new List<Point>();
 
 
-        enum DayOfWeek
+        public enum DayOfWeek
         {
             日 = 0,
             月,
@@ -122,9 +122,9 @@ namespace test1
                     {
                         case (int)ColumnName.Check:
                             if (this.dataGridView1[col, row].Value != null)
-                                data.Check = this.dataGridView1[col, row].Value.ToString();
+                                data.Check = bool.Parse(this.dataGridView1[col, row].Value.ToString());
                             else
-                                data.Check = false.ToString();
+                                data.Check = false;
                             break;
                         case (int)ColumnName.Title:
                             if (this.dataGridView1[col, row].Value != null)
@@ -412,7 +412,8 @@ namespace test1
             //視聴期限算出　残り0日の場合は残り7日にする
             for (int row = 0; row < this.dataGridView1.RowCount; row++)
             {
-                if (Enum.IsDefined(typeof(DayOfWeek), this.dataGridView1[(int)ColumnName.DayOfWeek, row].Value))
+                if (this.dataGridView1[(int)ColumnName.DayOfWeek, row].Value!=null
+                    && Enum.IsDefined(typeof(DayOfWeek), this.dataGridView1[(int)ColumnName.DayOfWeek, row].Value))
                 {
                     int limit = (int)((DayOfWeek)Enum.Parse(typeof(DayOfWeek), this.dataGridView1[(int)ColumnName.DayOfWeek, row].Value.ToString()))
                          - (int)DateTime.Today.DayOfWeek + 7;
