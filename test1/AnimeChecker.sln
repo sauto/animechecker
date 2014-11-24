@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimeChecker", "test1\Anime
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{4C818040-4E42-47A2-B472-AA8BA1516DAE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimeCheckerByXaml", "AnimeCheckerByXaml\AnimeCheckerByXaml.csproj", "{D5608236-EEA5-46B7-BB7C-19288496C155}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4C818040-4E42-47A2-B472-AA8BA1516DAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C818040-4E42-47A2-B472-AA8BA1516DAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C818040-4E42-47A2-B472-AA8BA1516DAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5608236-EEA5-46B7-BB7C-19288496C155}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5608236-EEA5-46B7-BB7C-19288496C155}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5608236-EEA5-46B7-BB7C-19288496C155}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5608236-EEA5-46B7-BB7C-19288496C155}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

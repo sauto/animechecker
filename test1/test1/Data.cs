@@ -30,13 +30,13 @@ namespace GridDatas
         //コンストラクタ
         public AllDataForXaml()
         {
-            dataList = new ObservableCollection<DataForXaml>();
+            dataList = new SortableObservableCollection();
         }
         /// <summary>
         /// データ
         /// </summary>
         [System.Xml.Serialization.XmlElement("data")]
-        public ObservableCollection<DataForXaml> dataList { get; set; }
+        public SortableObservableCollection dataList { get; set; }
     }
 
     public class Data
@@ -77,12 +77,25 @@ namespace GridDatas
          * てかなんでフォーム版はいちいちグリッドから取得してたんだ
          */
 
+        bool _check;
         /// <summary>
         /// チェックボックスの値
         /// </summary>
         [System.Xml.Serialization.XmlElement("check")]
-        public bool Check { get; set; }
+        public bool Check
+        {
+            get
+            {
+                return _check;
+            }
+            set
+            {
 
+                _check = value;
+                OnPropertyChanged("Check");
+            }
+        }
+        
         string _title;
         /// <summary>
         /// 名前
@@ -113,13 +126,12 @@ namespace GridDatas
                 {
                     MessageBox.Show(test1.Properties.Settings.Default.E0002,
                                                     "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
                 }
                 else
                 {
-                    _time = value;
-                    OnPropertyChanged("Time");
+                    _time = value;                    
                 }
+                OnPropertyChanged("Time");
             }
         }
 
@@ -138,14 +150,17 @@ namespace GridDatas
                 {
                     MessageBox.Show(test1.Properties.Settings.Default.E0001,
                                                     "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //入力値が間違っていてもOnPropertyChangedで更新すれば元通り
                 }
                 else
                 {
                     _day = value;
 
-                    OnPropertyChanged("Day");
-                    OnPropertyChanged("Limit");
                 }
+
+                OnPropertyChanged("Day");
+
+                OnPropertyChanged("Limit");
             }
         }
         /// <summary>
@@ -159,10 +174,17 @@ namespace GridDatas
         public String Limit {
             get
             {
-                int limit = (int)((test1.Form1.DayOfWeek)Enum.Parse(typeof(test1.Form1.DayOfWeek), Day))
-                         - (int)DateTime.Today.DayOfWeek + 7;
+                
 
-                _limit = "あと" + ((limit % 7 == 0 ? 7 : 0) + (limit % 7)) + "日";
+                if (!string.IsNullOrEmpty(Day))
+                {
+                    int limit = (int)((test1.Form1.DayOfWeek)Enum.Parse(typeof(test1.Form1.DayOfWeek), Day))
+                             - (int)DateTime.Today.DayOfWeek + 7;
+
+                    _limit = "あと" + ((limit % 7 == 0 ? 7 : 0) + (limit % 7)) + "日";
+                }
+                else
+                    _limit = string.Empty;
 
                 return _limit;
             }
@@ -176,12 +198,79 @@ namespace GridDatas
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        public virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = this.PropertyChanged;
             if (handler != null)
                 handler(this, new PropertyChangedEventArgs(propertyName));
 
+        }
+    }
+
+    /// <summary>
+    /// ソート可能なObservableCollection
+    /// http://smdn.jp/programming/netfx/collections/3_objectmodel_2_observablecollection/
+    /// </summary>
+    public class SortableObservableCollection : ObservableCollection<DataForXaml>
+    {
+        public void Sort()
+        {
+            // IListインターフェイスからArrayListのラッパーを作り、IComparer<T>を使ってソートする
+            //ArrayListのSortが使えるようにした
+            System.Collections.ArrayList.Adapter(this).Sort(new DayOfWeekComparer());
+        }
+
+        public void Reverse()
+        {
+            // IListインターフェイスからArrayListのラッパーを作りリバースする
+            System.Collections.ArrayList.Adapter(this).Reverse();
+        }
+    }
+
+    /// <summary>
+    /// 曜日enumに変換して比較
+    /// http://dobon.net/vb/dotnet/programing/icomparer.html
+    /// </summary>
+    public class DayOfWeekComparer : System.Collections.IComparer, System.Collections.Generic.IComparer<DataForXaml>
+    {
+        public int Compare(object x, object y)
+        {
+            //nullが最も小さいとする
+            if (x == null && y == null)
+            {
+                return 0;
+            }
+            if (x == null)
+            {
+                return -1;
+            }
+            if (y == null)
+            {
+                return 1;
+            }
+
+            return (int)((test1.Form1.DayOfWeek)Enum.Parse(typeof(test1.Form1.DayOfWeek), ((DataForXaml)x).Day)) -
+            (int)((test1.Form1.DayOfWeek)Enum.Parse(typeof(test1.Form1.DayOfWeek), ((DataForXaml)y).Day));
+        }
+
+        public int Compare(DataForXaml x, DataForXaml y)
+        {
+            //nullが最も小さいとする
+            if (x == null && y == null)
+            {
+                return 0;
+            }
+            if (x == null)
+            {
+                return -1;
+            }
+            if (y == null)
+            {
+                return 1;
+            }
+
+            return (int)((test1.Form1.DayOfWeek)Enum.Parse(typeof(test1.Form1.DayOfWeek), x.Day)) -
+            (int)((test1.Form1.DayOfWeek)Enum.Parse(typeof(test1.Form1.DayOfWeek), y.Day));
         }
     }
 }
