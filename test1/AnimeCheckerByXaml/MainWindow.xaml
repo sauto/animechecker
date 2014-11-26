@@ -24,61 +24,11 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <!--<TextBox Grid.Column="0" Grid.Row="0" Margin="73,75,30,43"  TextAlignment="Center" RenderTransformOrigin="0.5,0.5"
-                 Loaded="textBox0_Loaded" KeyDown="textBox0_KeyDown" Name="textBox0"
-                   Text="{Binding Path=Time ,Mode=OneWay}" Background="#FF15BD88"/>
 
-        <TextBox Grid.Column="0" Grid.Row="1" Margin="73,75,30,43"  Text="{Binding Path=Title ,Mode=OneWay}" TextAlignment="Center" RenderTransformOrigin="0.5,0.5"
-                 KeyDown="TextBox_KeyDown" Name="textBox1">
-            <TextBox.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="20"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </TextBox.RenderTransform>
-        </TextBox>-->
-        <!--<ListView Height="239" Margin="37,35,10,0" VerticalAlignment="Top" Grid.RowSpan="2" Grid.ColumnSpan="2"
-                  ItemsSource="{Binding}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="30" />
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <CheckBox Name="CheckBox" IsChecked="{Binding Path=Check ,Mode=TwoWay}" Grid.Column="0"/>
-                        <TextBox Name="Title" Text="{Binding Path=Title ,Mode=TwoWay}" Grid.Column="1"/>
-                        <TextBox Name="Time" Text="{Binding Path=Time ,Mode=TwoWay}" Grid.Column="2"/>
-                        <TextBox Name="Day" Text="{Binding Path=Day ,Mode=TwoWay}" Grid.Column="3"/>
-                        <TextBox Name="ID" Text="{Binding Path=ID ,Mode=TwoWay}" Grid.Column="4" Visibility="Collapsed"/>
-                        <TextBox Name="Limit"  Grid.Column="5"/>
-                    </Grid>
-                    
-                </DataTemplate>                
-            </ListView.ItemTemplate>
-            
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="25"/>
-                    <GridViewColumn Header="アニメ名" Width="100"/>
-                </GridView>
-            </ListView.View>
-        </ListView>-->
-
-        <!--<DataGrid>
-            <DataGrid.Columns>
-                <DataGridCheckBoxColumn x:Name="CheckBox" Binding="{Binding Path=Check ,Mode=TwoWay}"/>
-                
-            </DataGrid.Columns>
-            
-        </DataGrid>-->
-
+        <!--SourceはResourceフォルダの画像ファイルのビルドアクションをResourceにする必要がある-->
+        <Image HorizontalAlignment="Left"  Margin="10,10,0,-55" Grid.RowSpan="2" VerticalAlignment="Top"
+               Name="pictureBox" Source="./Resources/白紙.png" Grid.ColumnSpan="2" Stretch="Fill" 
+               AllowDrop="True" Drop="pictureBox_Drop" PreviewDragOver="pictureBox_PreviewDragOver"/>
 
         <!--
         AutoGenerateColumnsがtrueだとバインディングデータのクラスの順番を列順に一致させないとおかしくなる
@@ -86,41 +36,45 @@
         列ヘッダが自動的にプロパティ名になる
         ItemsSource="{Binding}"とした場合、DataContextに入れたObservableCollectionオブジェクトにバインドする
         -->
-        <DataGrid x:Name="upperdatagrid" ItemsSource="{Binding}"  AutoGenerateColumns="False" 
+        <DataGrid x:Name="upperdatagrid" 
+                  ItemsSource="{Binding}" 
+                  AutoGenerateColumns="False" 
                   Grid.ColumnSpan="2" Margin="42,30,60,54" CellEditEnding="datagrid_CellEditEnding" 
-                  Grid.RowSpan="2" SelectionUnit="CellOrRowHeader"  AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" 
-                  Sorting="upperdatagrid_Sorting" >
+                  Grid.RowSpan="2" SelectionUnit="CellOrRowHeader"  
+                  Sorting="upperdatagrid_Sorting" PreviewKeyDown="upperdatagrid_PreviewKeyDown" 
+                  CanUserAddRows="False" CanUserDeleteRows="False" 
+                  >
             <DataGrid.Columns>
                 <!--チェックボックスの場合はbool型プロパティにバインドしないといけない
                  UpdateSourceTriggerをPropertyChangedにしないとチェック時すぐにsetプロパティが起動しない
-                CheckBoxColumnだとワンクリックでチェックがつかないのでTemplateColumnを使って中身のCheckBoxを直接置く
-                -->
-                
-                <DataGridTemplateColumn Header="" >
+                CheckBoxColumnだとワンクリックでチェックがつかないのでTemplateColumnを使って中身のCheckBoxを直接置く-->
+
+                <DataGridTemplateColumn x:Name="Check"  Header="" ClipboardContentBinding="{Binding Path=Check ,Mode=TwoWay ,UpdateSourceTrigger=PropertyChanged}"
+                                        >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding Path=Check ,Mode=TwoWay ,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn x:Name="Title" Binding="{Binding Path=Title ,Mode=TwoWay}" Header="タイトル"/>
-                <DataGridTextColumn x:Name="Time" Binding="{Binding Path=Time ,Mode=TwoWay}" Header="視聴時間(分)"/>
-                <DataGridTextColumn x:Name="Day" Binding="{Binding Path=Day ,Mode=TwoWay}" Header="放送曜日" />
+                <DataGridTextColumn x:Name="Title" Binding="{Binding Path=Title ,Mode=TwoWay}" Header="タイトル" PastingCellClipboardContent="Title_PastingCellClipboardContent"/>
+                <DataGridTextColumn x:Name="Time" Binding="{Binding Path=Time ,Mode=TwoWay}" Header="視聴時間(分)" PastingCellClipboardContent="Time_PastingCellClipboardContent"/>
+                <DataGridTextColumn x:Name="Day" Binding="{Binding Path=Day ,Mode=TwoWay}" Header="放送曜日" PastingCellClipboardContent="Day_PastingCellClipboardContent" />
                 <DataGridTextColumn x:Name="ID" Binding="{Binding Path=ID ,Mode=TwoWay}" Header="ID" Visibility="Hidden"/>
                 <DataGridTextColumn x:Name="Limit" Binding="{Binding Path=Limit ,Mode=TwoWay}"
                                     Header="視聴期限" IsReadOnly = "True">
                     <DataGridTextColumn.CellStyle>
                         <Style TargetType="{x:Type DataGridCell}">
-                        <!--チェックボックスプロパティの値によって色塗りONOFFを変更-->
-                        <Style.Triggers >
-                            <DataTrigger Binding="{Binding Path=Check}" Value="True" >
-                                <Setter Property="Background" Value="Black" />
-                            </DataTrigger>
-                        </Style.Triggers>
+                            <!--チェックボックスプロパティの値によって色塗りONOFFを変更-->
+                            <Style.Triggers >
+                                <DataTrigger Binding="{Binding Path=Check}" Value="True" >
+                                    <Setter Property="Background" Value="Black" />
+                                </DataTrigger>
+                            </Style.Triggers>
                         </Style>
                     </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
-                        </DataGrid.Columns>
+            </DataGrid.Columns>
         </DataGrid>
         <Button x:Name="AddBottun" Content="Button" HorizontalAlignment="Left" Margin="42,126,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75"/>
         <Expander Header="Expander" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -130,7 +84,7 @@
                     <ContentPresenter
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom">
-                        
+
                     </ContentPresenter>
                 </Button>
                 <Button DockPanel.Dock="Top" Margin="5,2,5,2" Width="90" >Command C
@@ -138,9 +92,13 @@
                         <Style TargetType="{StaticResource CellYellowStyle}"/>
                     </Button.Style>-->
                 </Button>
-                
+
             </StackPanel>
         </Expander>
+        <StackPanel Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="170,127,0,0" Grid.Row="1" VerticalAlignment="Top" Width="214">
+            <TextBlock TextWrapping="Wrap" Text="TextBlock" Margin="123,0,10,0"/>
+            <Label Content="残り時間" Margin="0,0,122,0" Height="29"/>
+        </StackPanel>
 
     </Grid>
 </Window>

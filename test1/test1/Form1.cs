@@ -748,6 +748,7 @@ namespace test1
                 //カレントセルを基準として一番列数が多いセルに合わせてタブ文字が増える　金\n\t30\t\n遊戯王\t\t
                 //異なる行列を選択した場合コピーは受け付けない
 
+                //下の方でペーストしたときにはみ出すのを防止
                 int maxEnableCopyRow = this.dataGridView1.RowCount - this.dataGridView1.CurrentCell.RowIndex;
                 int pasteRange = 0;
 
@@ -755,6 +756,7 @@ namespace test1
 
                 int copyRow = 0;
                 for (int row = this.dataGridView1.CurrentCell.RowIndex;
+                    //現在の行からコピーできる行数までコピー配列にコピー
                     row < this.dataGridView1.CurrentCell.RowIndex + pasteRange;
                     row++)
                 {
@@ -771,7 +773,7 @@ namespace test1
 
                 bool breakFlag = false;
                 //カレントセルを起点として取得
-                //そこをforの起点として順次入れていく　途中でエラーしたらデータリストから再生
+                //そこをforの起点として順次入れていく　
                 for (int row = 0; row < this.dataGridView1.RowCount; row++)
                 {
                     if (breakFlag)
@@ -781,7 +783,7 @@ namespace test1
                     {
                         if (!string.IsNullOrEmpty(array[col, row]))
                         {
-                            if (!PasteValidCheck(col, row, array))
+                            if (!PasteValidCheckAndPaste(col, row, array))
                             {
                                 breakFlag = true;
                                 break;
@@ -790,6 +792,7 @@ namespace test1
                     }
                 }
 
+                //途中でエラーしたらデータリストから再生
                 if (breakFlag)
                 {
                     for (int row = 0; row < this.dataGridView1.RowCount; row++)
@@ -824,13 +827,13 @@ namespace test1
         }
 
         /// <summary>
-        /// ペーストした値が正しいかチェック
+        /// ペーストした値が正しいかチェックして代入
         /// </summary>
         /// <param name="col"></param>
         /// <param name="row"></param>
         /// <param name="array">コピーしたセルすべて</param>
         /// <returns></returns>
-        bool PasteValidCheck(int col, int row, string[,] array)
+        bool PasteValidCheckAndPaste(int col, int row, string[,] array)
         {
             if (col == this.dataGridView1.Columns["Check"].Index)
             {

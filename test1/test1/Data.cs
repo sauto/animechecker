@@ -37,6 +37,10 @@ namespace GridDatas
         /// </summary>
         [System.Xml.Serialization.XmlElement("data")]
         public SortableObservableCollection dataList { get; set; }
+
+
+        
+
     }
 
     public class Data
@@ -90,7 +94,6 @@ namespace GridDatas
             }
             set
             {
-
                 _check = value;
                 OnPropertyChanged("Check");
             }
@@ -109,6 +112,7 @@ namespace GridDatas
                 _title = value;
                 //これをしないとデータをいじったときにxaml側の値が更新されない
                 OnPropertyChanged("Title");
+                OnPropertyChanged("RowHeader");
             }
         }
         string _time;
@@ -194,7 +198,6 @@ namespace GridDatas
             }
         }
 
-        
 
         public event PropertyChangedEventHandler PropertyChanged;
 
