@@ -98,34 +98,11 @@ namespace AnimeCheckerByXaml
             MainPanel.DataContext = _allData.dataList;
         }
 
-        //private void TextBox_KeyDown(object sender, KeyEventArgs e)
-        //{
-        //    if(e.Key == Key.LeftCtrl)
-        //    {
-        //        textBox1.Text = "11";
-        //    }
-        //}
-
-        //private void textBox0_KeyDown(object sender, KeyEventArgs e)
-        //{
-        //    ((DataForXaml)_MainWindow.DataContext).Title = "dksajf;";
-        //}
-
-        //private void textBox0_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    _MainWindow.DataContext = new DataForXaml() { Title = "bbb" };
-
-        //    //Binding bindingTitle = new Binding("Title");
-        //    //bindingTitle.Mode = BindingMode.OneWay;
-        //    //bindingTitle.Source = bindingData;
-        //    //textBlock0.SetBinding(TextBlock.TextProperty, bindingTitle);
-
-        //}
-
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
-            //MainPanel.DataContext = 
+
         }
+               
 
         /// <summary>
         /// 列の自動生成中にヘッダ名を書き換える　そのままだとプロパティ名になってしまうので
@@ -165,6 +142,52 @@ namespace AnimeCheckerByXaml
             
         }
 
+        public string RestTime
+        {
+            get
+            {
+                int summary = 0;
+                foreach (var data in _allData.dataList)
+                {
+                    if (!data.Check)
+                    {
+                        int result;
+                        if (int.TryParse(data.Time, out result))
+                            summary += result;
+                    }
+                }
+
+                string restTime = "残り時間：" + (summary / 60).ToString() + "時間" + (summary % 60).ToString() + "分";
+
+                TextBlockWidthStretcher(restTime);
+
+                return  restTime;
+            }
+        }
+
+        /// <summary>
+        /// 残り時間を表示するテキストブロックを文字数に合わせて伸ばす
+        /// </summary>
+        /// <param name="text"></param>
+        void TextBlockWidthStretcher(string text)
+        {
+            TextBorder.Width = text.Length * 12;
+            TextBorder.Margin = new Thickness(
+                TextBorder.Margin.Left - text.Length * 12, TextBorder.Margin.Top,
+                TextBorder.Margin.Right - text.Length * 12, TextBorder.Margin.Bottom);
+            RestTimeText.Width = text.Length * 12;
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            RestTimeText.Text = RestTime;
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            RestTimeText.Text = RestTime;
+        }
+
         /// <summary>
         /// 異常値入力してから同行の別セルをクリックしてもsetプロパティがなぜか動かずエラーが出ないため、
         /// CellEditEndingイベントで選択セルの行のバインドデータのIDからデータリストのデータを引いて
@@ -179,6 +202,8 @@ namespace AnimeCheckerByXaml
                 if (e.Column.Header.ToString() == "視聴時間(分)")
                 {
                     _allData.dataList.First(s => s.ID == ((DataForXaml)e.Row.Item).ID).Time = ((TextBox)e.EditingElement).Text;
+
+                    RestTimeText.Text = RestTime;
                 }
                 else if (e.Column.Header.ToString() == "放送曜日")
                 {
@@ -332,6 +357,11 @@ namespace AnimeCheckerByXaml
         {
             ((DataForXaml)e.Item).Day = e.Content.ToString();
         }
+
+
+        
+
+        
 
 
     }

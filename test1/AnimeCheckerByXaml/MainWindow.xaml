@@ -53,7 +53,7 @@
                                         >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding Path=Check ,Mode=TwoWay ,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <CheckBox IsChecked="{Binding Path=Check ,Mode=TwoWay ,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -95,10 +95,17 @@
 
             </StackPanel>
         </Expander>
-        <StackPanel Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="170,127,0,0" Grid.Row="1" VerticalAlignment="Top" Width="214">
-            <TextBlock TextWrapping="Wrap" Text="TextBlock" Margin="123,0,10,0"/>
-            <Label Content="残り時間" Margin="0,0,122,0" Height="29"/>
-        </StackPanel>
+
+        <Border x:Name="TextBorder" Width="auto" Padding="3"
+            BorderThickness="1" CornerRadius="8"
+            Background="#FFCFFDEE" BorderBrush="Black" Margin="226,126,150,14" Grid.ColumnSpan="2" Grid.Row="1">
+
+            <TextBlock x:Name="RestTimeText" TextWrapping="Wrap" Text="ttt" 
+                   Grid.Row="1" HorizontalAlignment="Center" Width="auto" 
+                   RenderTransformOrigin="0.07,0.611" Grid.ColumnSpan="2" TextAlignment="Center" Margin="-3,-5"/>
+
+        </Border>
+
 
     </Grid>
 </Window>
