@@ -890,20 +890,6 @@ namespace test1
         #endregion
 
         #region 行の削除
-        /// <summary>
-        /// セルクリック時に選択したセルの行数
-        /// </summary>
-        int _selectRow = 0;
-
-        /// <summary>
-        /// 現在選択中の行を取得
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            _selectRow = e.RowIndex;
-        }
 
         /// <summary>
         /// 選択行の削除
@@ -912,13 +898,42 @@ namespace test1
         /// <param name="e"></param>
         private void DeleteButton_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.Rows.Count > 1)
+            var cells = dataGridView1.SelectedCells;
+
+            List<int> idList = new List<int>();
+
+            //削除する行のデータのIDリストを作成
+            foreach (DataGridViewCell cell in cells)
             {
-                dataGridView1.Rows.RemoveAt(_selectRow);
-                //最終行を削除した場合選択行のインデックスが変わらないのでエラーになるのを防止
-                if (_selectRow == dataGridView1.Rows.Count)
-                    _selectRow -= 1;
+                int id;
+                if (int.TryParse(cell.OwningRow.Cells[(int)ColumnName.ID].Value.ToString(), out id))
+                {
+                    if (!idList.Contains(id))
+                    {
+                        idList.Add(id);
+                    }
+                }
             }
+
+            //IDが一致する行数を削除
+            foreach (int id in idList)
+            {
+                for (int rowIndex = 0; rowIndex < dataGridView1.RowCount; rowIndex++)
+                {
+                    int result;
+                    if (int.TryParse(
+                        dataGridView1[(int)ColumnName.ID, rowIndex].Value.ToString(), out result))
+                    {
+                        if (result == id)
+                        {
+                            dataGridView1.Rows.RemoveAt(rowIndex);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            RestTimeDisplay();
         }
         #endregion
 
@@ -1129,6 +1144,7 @@ namespace test1
             this.dataGridView1.RefreshEdit();
             RestTimeDisplay();
         }
+
 
 
 
