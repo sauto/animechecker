@@ -359,14 +359,40 @@ namespace test1
         /// <param name="e"></param>
         private void AddButton_Click(object sender, EventArgs e)
         {
-            this.dataGridView1.Rows.Add(false, "", "", "", this.dataGridView1.RowCount + 1);
-
-
+            this.dataGridView1.Rows.Add(false, "", "", "", GenerateNewId().ToString());
         }
         private void AddRowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(GridInputCheck())
-                this.dataGridView1.Rows.Add(false, "", "", "", this.dataGridView1.RowCount + 1);
+            //Leaveも発動しないのでチェック入れてる
+            if (GridInputCheck())
+                this.dataGridView1.Rows.Add(false, "", "", "", GenerateNewId().ToString());
+        }
+
+        /// <summary>
+        /// 重複しないように新しいIDを生成
+        /// </summary>
+        /// <returns></returns>
+        int GenerateNewId()
+        {
+            List<string> idList = new List<string>();
+            for (int row = 0; row < this.dataGridView1.RowCount; row++)
+            {
+                idList.Add(this.dataGridView1[(int)ColumnName.ID, row].Value.ToString());
+            }
+
+            int id = 0;
+            int i = 0;
+            while(true)
+            {
+                if (!idList.Contains(i.ToString()))
+                {
+                    id = i;
+                    break;
+                }
+                i++;
+            }
+
+            return id;
         }
         #endregion
 
@@ -438,7 +464,7 @@ namespace test1
             //コミットしたあと編集終了してもValueChangedイベントが起きない
             //
             
-            //空白があったらその行はいったん退避してソート後に後ろに付け足す
+            //空白があったら処理が面倒なのでその行はいったん退避してソート後に後ろに付け足す
             List<Data> tempDataList = new List<Data>();
             List<Data> emptyDataList = new List<Data>();
 
@@ -476,6 +502,7 @@ namespace test1
                 _allData.dataList.Add(data);
             }
 
+            //ソートして空白行を末尾にしたデータを行に入れる
             foreach (Data data in _allData.dataList)
             {
                 this.dataGridView1.Rows.Add(data.Check, data.Title, data.Time, data.Day,data.ID);
@@ -915,7 +942,7 @@ namespace test1
                 }
             }
 
-            //IDが一致する行数を削除
+            //全てのIDに対して全行を検索しIDが一致する行数を削除
             foreach (int id in idList)
             {
                 for (int rowIndex = 0; rowIndex < dataGridView1.RowCount; rowIndex++)

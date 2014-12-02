@@ -30,12 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.WeekColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Limit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RestTime = new System.Windows.Forms.TextBox();
             this.RestTimeText = new System.Windows.Forms.Label();
             this.SaveButton = new System.Windows.Forms.Button();
@@ -51,6 +45,12 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.DeleteButton = new System.Windows.Forms.Button();
+            this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WeekColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Limit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -85,48 +85,6 @@
             this.dataGridView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView1_KeyDown);
             this.dataGridView1.Leave += new System.EventHandler(this.dataGridView1_Leave);
             this.dataGridView1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.dataGridView1_PreviewKeyDown);
-            // 
-            // Check
-            // 
-            this.Check.FalseValue = "false";
-            this.Check.Frozen = true;
-            this.Check.HeaderText = "";
-            this.Check.Name = "Check";
-            this.Check.TrueValue = "true";
-            this.Check.Width = 25;
-            // 
-            // Title
-            // 
-            this.Title.Frozen = true;
-            this.Title.HeaderText = "タイトル";
-            this.Title.Name = "Title";
-            this.Title.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Title.Width = 80;
-            // 
-            // Time
-            // 
-            this.Time.HeaderText = "視聴時間(分)";
-            this.Time.Name = "Time";
-            // 
-            // WeekColumn
-            // 
-            this.WeekColumn.HeaderText = "放送曜日";
-            this.WeekColumn.Name = "WeekColumn";
-            this.WeekColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.WeekColumn.Width = 60;
-            // 
-            // ID
-            // 
-            this.ID.HeaderText = "ID";
-            this.ID.Name = "ID";
-            this.ID.Visible = false;
-            // 
-            // Limit
-            // 
-            this.Limit.HeaderText = "視聴期限";
-            this.Limit.Name = "Limit";
-            this.Limit.ReadOnly = true;
-            this.Limit.Width = 80;
             // 
             // RestTime
             // 
@@ -267,6 +225,48 @@
             this.DeleteButton.Text = "選択行の削除";
             this.DeleteButton.UseVisualStyleBackColor = true;
             this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
+            // 
+            // Check
+            // 
+            this.Check.FalseValue = "false";
+            this.Check.Frozen = true;
+            this.Check.HeaderText = "";
+            this.Check.Name = "Check";
+            this.Check.TrueValue = "true";
+            this.Check.Width = 25;
+            // 
+            // Title
+            // 
+            this.Title.Frozen = true;
+            this.Title.HeaderText = "タイトル";
+            this.Title.Name = "Title";
+            this.Title.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Title.Width = 80;
+            // 
+            // Time
+            // 
+            this.Time.HeaderText = "視聴時間(分)";
+            this.Time.Name = "Time";
+            // 
+            // WeekColumn
+            // 
+            this.WeekColumn.HeaderText = "放送曜日";
+            this.WeekColumn.Name = "WeekColumn";
+            this.WeekColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.WeekColumn.Width = 60;
+            // 
+            // ID
+            // 
+            this.ID.HeaderText = "ID";
+            this.ID.Name = "ID";
+            this.ID.Visible = false;
+            // 
+            // Limit
+            // 
+            this.Limit.HeaderText = "視聴期限";
+            this.Limit.Name = "Limit";
+            this.Limit.ReadOnly = true;
+            this.Limit.Width = 80;
             // 
             // Form1
             // 
