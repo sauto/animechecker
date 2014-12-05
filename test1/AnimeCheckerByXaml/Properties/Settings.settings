@@ -3,10 +3,16 @@
   <Profiles />
   <Settings>
     <Setting Name="E0001" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">半角数字を入れてください</Value>
+      <Value Profile="(Default)">半角数字を入力してください。</Value>
     </Setting>
-    <Setting Name="E0002" Type="System.String" Scope="User">
-      <Value Profile="(Default)">曜日を漢字で入れてください</Value>
+    <Setting Name="E0002" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">曜日を漢字で入力してください。</Value>
+    </Setting>
+    <Setting Name="E0004" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">そのコマンドは複数の選択範囲に対して実行できません。</Value>
+    </Setting>
+    <Setting Name="E0003" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">正しい値を入力してください。</Value>
     </Setting>
   </Settings>
 </SettingsFile>

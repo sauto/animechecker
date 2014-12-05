@@ -25,22 +25,37 @@ namespace AnimeCheckerByXaml.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("半角数字を入れてください")]
+        [global::System.Configuration.DefaultSettingValueAttribute("半角数字を入力してください。")]
         public string E0001 {
             get {
                 return ((string)(this["E0001"]));
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("曜日を漢字で入れてください")]
+        [global::System.Configuration.DefaultSettingValueAttribute("曜日を漢字で入力してください。")]
         public string E0002 {
             get {
                 return ((string)(this["E0002"]));
             }
-            set {
-                this["E0002"] = value;
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("そのコマンドは複数の選択範囲に対して実行できません。")]
+        public string E0004 {
+            get {
+                return ((string)(this["E0004"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("正しい値を入力してください。")]
+        public string E0003 {
+            get {
+                return ((string)(this["E0003"]));
             }
         }
     }

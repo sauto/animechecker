@@ -46,7 +46,7 @@ namespace BindingCommand
                 newData.Title = newData.Time = newData.Day = string.Empty;
 
                 //データコンテキスト取得
-                var dataList = ((SortableObservableCollection)((Grid)parameter).DataContext);
+                var dataList = ((SortableObservableCollection)((Canvas)parameter).DataContext);
 
                 //ID生成
                 newData.ID = GenerateNewId(dataList);
@@ -103,7 +103,7 @@ namespace BindingCommand
             {
                 BindingCommands.instance._deleteflag = true;
                 DataGrid datagrid = null;
-                foreach (var childElement in ((Grid)parameter).Children)
+                foreach (var childElement in ((Canvas)parameter).Children)
                 {
                     if (childElement is DataGrid)
                     {
@@ -112,7 +112,7 @@ namespace BindingCommand
                 }
 
                 //データコンテキスト取得
-                var dataList = ((SortableObservableCollection)((Grid)parameter).DataContext);
+                var dataList = ((SortableObservableCollection)((Canvas)parameter).DataContext);
 
                 if (dataList.Count > 0)
                 {

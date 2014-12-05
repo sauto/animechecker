@@ -172,13 +172,11 @@ namespace DataGridDatas
     {
         public ICommand AddRowCommand { get; private set; }
         public ICommand DeleteRowCommand { get; private set; }
-        public ICommand ControlMoverCommand { get; private set; }
 
         public SortableObservableCollection()
         {
             AddRowCommand = BindingCommands.GetSingleton.AddRowCommandImplementClass;
             DeleteRowCommand = BindingCommands.GetSingleton.DeleteRowCommandImplementClass;
-            ControlMoverCommand = BindingCommands.GetSingleton.MoverCommandImplementClass;
         }
 
         public void Sort()

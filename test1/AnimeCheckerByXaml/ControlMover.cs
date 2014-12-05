@@ -19,7 +19,6 @@ namespace Ctrl.ControlMover
         /// </summary>
         bool isDraggable = false;
 
-        /// <param name="mouseListner">マウス入力を受け取るコントロール</param>
         /// <param name="moveCtrl">移動させるコントロール</param>
         public ControlMover(System.Windows.FrameworkElement moveCtrl)
         {
@@ -55,12 +54,9 @@ namespace Ctrl.ControlMover
                 System.Windows.Point curPoint = e.GetPosition(el);
 
                 //移動処理
-                movedControl.Margin = new System.Windows.Thickness(
-                    movedControl.Margin.Left + (curPoint.X - lastMouseDownPoint.X),
-                    movedControl.Margin.Top + (curPoint.Y - lastMouseDownPoint.Y),
-                    movedControl.Margin.Right - (curPoint.X - lastMouseDownPoint.X),
-                    movedControl.Margin.Bottom - (curPoint.Y - lastMouseDownPoint.Y)
-                    );
+                Canvas.SetLeft(movedControl, Canvas.GetLeft(movedControl) + (curPoint.X - lastMouseDownPoint.X));
+                Canvas.SetTop(movedControl, Canvas.GetTop(movedControl) + (curPoint.Y - lastMouseDownPoint.Y));
+                
 
             }
         }
