@@ -20,6 +20,9 @@ namespace Ctrl.ControlMover
         bool isDraggable = false;
 
         /// <param name="moveCtrl">移動させるコントロール</param>
+        /// <summary>
+        /// 宣言時にイベントを付加して機能追加
+        /// </summary>
         public ControlMover(System.Windows.FrameworkElement moveCtrl)
         {
             this.movedControl = moveCtrl;

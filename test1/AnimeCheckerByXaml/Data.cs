@@ -173,10 +173,12 @@ namespace DataGridDatas
         public ICommand AddRowCommand { get; private set; }
         public ICommand DeleteRowCommand { get; private set; }
 
+        public BindingCommands _bindingCommands = new BindingCommands();
+
         public SortableObservableCollection()
         {
-            AddRowCommand = BindingCommands.GetSingleton.AddRowCommandImplementClass;
-            DeleteRowCommand = BindingCommands.GetSingleton.DeleteRowCommandImplementClass;
+            AddRowCommand = _bindingCommands.AddRowCommandImplementClass;
+            DeleteRowCommand = _bindingCommands.DeleteRowCommandImplementClass;
         }
 
         public void Sort()

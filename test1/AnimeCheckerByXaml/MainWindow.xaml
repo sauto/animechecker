@@ -65,7 +65,7 @@
 
         </Border>
 
-        <!--
+            <!--
         AutoGenerateColumnsがtrueだとバインディングデータのクラスの順番を列順に一致させないとおかしくなる
         バインドしたクラスの全プロパティが反映される
         列ヘッダが自動的にプロパティ名になる
@@ -76,11 +76,10 @@
                   AutoGenerateColumns="False" 
                   Height="200" Width="300" HorizontalAlignment="Left" VerticalAlignment="Top"
                   Grid.ColumnSpan="2" Canvas.Left="42" Canvas.Top="30" CellEditEnding="datagrid_CellEditEnding" 
-                  Grid.RowSpan="2" SelectionUnit="CellOrRowHeader"  
+                  Grid.RowSpan="2" SelectionUnit="CellOrRowHeader"
                   Sorting="upperdatagrid_Sorting" PreviewKeyDown="upperdatagrid_PreviewKeyDown" 
-                  CanUserAddRows="False" CanUserDeleteRows="False" 
                   SelectedCellsChanged="upperdatagrid_SelectedCellsChanged" Loaded="upperdatagrid_Loaded" Initialized="upperdatagrid_Initialized" 
-                  MinHeight="55" MinWidth="55" Padding="2"
+                  MinHeight="55" MinWidth="55"  CanUserAddRows="False" CanUserDeleteRows="False" Background="#FFF7F7F7" BorderThickness="8" BorderBrush="#FF86C0F7"
                   >
             <DataGrid.InputBindings>
                 <KeyBinding Gesture="Ctrl+R" Command="{Binding AddRowCommand}" CommandParameter="{Binding ElementName=MainPanel}"/>
@@ -120,7 +119,6 @@
             </DataGrid.Columns>
         </DataGrid>
 
-
         <Menu HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="141" Margin="0,0,0,0">
             <MenuItem x:Name="menu" Height="auto" Width="65" Header="メニュー" Background="AliceBlue">
                 <MenuItem HorizontalAlignment="Stretch" Width="auto" Margin="0,0,-4,0" 
@@ -142,7 +140,7 @@
                            InputGestureText="Ctrl+I" Click="LayoutReset_Click"/>
 
                 <MenuItem x:Name="LayoutFix" Header="レイアウトの固定" HorizontalAlignment="Stretch" Width="auto" Margin="0,0,-4,0" 
-                          InputGestureText="Ctrl+F" IsChecked="False" Click="LayoutFix_Click"
+                          InputGestureText="Ctrl+F" IsChecked="False" Click="LayoutFix_Click" Checked="LayoutFix_Checked" Unchecked="LayoutFix_Unchecked"
                           />
                 <MenuItem x:Name="AllCheckUnChecked" Header="全てのチェックを外す" HorizontalAlignment="Left" Width="auto" Margin="0,0,-4,0" 
                           InputGestureText="Ctrl+O" Click="AllCheckUnChecked_Click"

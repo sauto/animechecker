@@ -11,18 +11,19 @@ namespace BindingCommand
 {
     public class BindingCommands
     {
+        public BindingCommands() { }
 
-        private static BindingCommands instance = new BindingCommands();
+        //private static BindingCommands instance = new BindingCommands();
 
-        private BindingCommands() { }
+        //private BindingCommands() { }
 
-        public static BindingCommands GetSingleton
-        {
-            get
-            {
-                return instance;
-            }
-        }
+        //public static BindingCommands GetSingleton
+        //{
+        //    get
+        //    {
+        //        return instance;
+        //    }
+        //}
 
        
 
@@ -101,7 +102,11 @@ namespace BindingCommand
 
             public void Execute(object parameter)
             {
-                BindingCommands.instance._deleteflag = true;
+                //データコンテキスト取得
+                var dataList = ((SortableObservableCollection)((Canvas)parameter).DataContext);
+
+                dataList._bindingCommands._deleteflag = true;
+
                 DataGrid datagrid = null;
                 foreach (var childElement in ((Canvas)parameter).Children)
                 {
@@ -109,10 +114,7 @@ namespace BindingCommand
                     {
                         datagrid = (DataGrid)childElement;
                     }
-                }
-
-                //データコンテキスト取得
-                var dataList = ((SortableObservableCollection)((Canvas)parameter).DataContext);
+                }                
 
                 if (dataList.Count > 0)
                 {
@@ -142,11 +144,9 @@ namespace BindingCommand
 
                         }
                     }
-
-
                 }
 
-                BindingCommands.instance._deleteflag = false;
+                dataList._bindingCommands._deleteflag = false;
             }
         }
 

@@ -115,6 +115,7 @@ namespace AnimeCheckerByXaml
                     _allData = new AllDataForXaml();
 
                     MainPanel.DataContext = _allData.dataList;
+                    
                 }
             }
             catch (Exception e)
@@ -166,6 +167,11 @@ namespace AnimeCheckerByXaml
                 (FrameworkElement)sender, Mover.DAndDSizeChanger.DAndDArea.All, 8);
         }
 
+        private void upperdatagrid_Initialized(object sender, EventArgs e)
+        {
+            new ControlMover(((System.Windows.FrameworkElement)sender));
+        }
+
         private void SaveBottun_Initialized(object sender, EventArgs e)
         {
             new ControlMover(((System.Windows.FrameworkElement)sender));
@@ -177,11 +183,6 @@ namespace AnimeCheckerByXaml
         }
 
         private void AddBottun_Initialized(object sender, EventArgs e)
-        {
-            new ControlMover(((System.Windows.FrameworkElement)sender));
-        }
-
-        private void upperdatagrid_Initialized(object sender, EventArgs e)
         {
             new ControlMover(((System.Windows.FrameworkElement)sender));
         }
@@ -525,7 +526,7 @@ namespace AnimeCheckerByXaml
         /// <param name="e"></param>
         private void upperdatagrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
-            if (BindingCommand.BindingCommands.GetSingleton._deleteflag)
+            if (_allData.dataList._bindingCommands._deleteflag)
                 RestTimeText.Text = RestTime;
         }
         #endregion
@@ -616,16 +617,6 @@ namespace AnimeCheckerByXaml
 
 
 #endregion
-
-        /// <summary>
-        /// デフォで実装されているCloseコマンドの実体 メニューの閉じる実行時発動
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CommandBinding_ExecutedClose(object sender, ExecutedRoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
 
         #region レイアウト
 
@@ -812,6 +803,7 @@ namespace AnimeCheckerByXaml
 
         /// <summary>
         /// 勝手にリサイズするのを阻止
+        /// http://point56.blogspot.jp/2009/01/wpf_23.html
         /// </summary>
         void StopResizePictureBox()
         {
@@ -839,6 +831,17 @@ namespace AnimeCheckerByXaml
             AllCheckOFF();
         }
 
+
+        /// <summary>
+        /// デフォで実装されているCloseコマンドの実体 メニューの閉じる実行時発動
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CommandBinding_ExecutedClose(object sender, ExecutedRoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
         /// <summary>
         /// 最大化時に追従するようにする
         /// </summary>
@@ -849,6 +852,17 @@ namespace AnimeCheckerByXaml
             MainPanel.Height = e.NewSize.Height;
             MainPanel.Width = e.NewSize.Width;
         }
+
+        private void LayoutFix_Checked(object sender, RoutedEventArgs e)
+        {
+            ControlMover.IsFixLayout = true;
+        }
+
+        private void LayoutFix_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ControlMover.IsFixLayout = false;
+        }
+
 
 
 
