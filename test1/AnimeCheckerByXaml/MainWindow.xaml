@@ -29,8 +29,7 @@
         <KeyBinding Gesture="Ctrl+D" Command="{Binding DeleteRowCommand}" CommandParameter="{Binding ElementName=MainPanel}"/>
     </Window.InputBindings>
 
-    <Canvas Name="MainPanel"  Margin="0,0,2,0" Loaded="Grid_Loaded" KeyDown="MainPanel_KeyDown"
-          Height="330" Width="500" >
+    <Canvas Name="MainPanel"  Margin="8,0,2,8" Loaded="Grid_Loaded" KeyDown="MainPanel_KeyDown" >
 
 
         <Canvas.InputBindings>
@@ -65,7 +64,7 @@
 
         </Border>
 
-            <!--
+        <!--
         AutoGenerateColumnsがtrueだとバインディングデータのクラスの順番を列順に一致させないとおかしくなる
         バインドしたクラスの全プロパティが反映される
         列ヘッダが自動的にプロパティ名になる
@@ -81,6 +80,14 @@
                   SelectedCellsChanged="upperdatagrid_SelectedCellsChanged" Loaded="upperdatagrid_Loaded" Initialized="upperdatagrid_Initialized" 
                   MinHeight="55" MinWidth="55"  CanUserAddRows="False" CanUserDeleteRows="False" Background="#FFF7F7F7" BorderThickness="8" BorderBrush="#FF86C0F7"
                   >
+            <DataGrid.ContextMenu>
+                <ContextMenu Name="contextMenu">
+                    <MenuItem Header="選択行の削除" Command="{Binding DeleteRowCommand}" CommandParameter="{Binding ElementName=MainPanel}"/>
+                    <MenuItem Header="行の追加" Command="{Binding AddRowCommand}" CommandParameter="{Binding ElementName=MainPanel}"/>
+                    <MenuItem Header="コピー"/>
+                    <MenuItem Header="ペースト"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.InputBindings>
                 <KeyBinding Gesture="Ctrl+R" Command="{Binding AddRowCommand}" CommandParameter="{Binding ElementName=MainPanel}"/>
                 <KeyBinding Gesture="Ctrl+D" Command="{Binding DeleteRowCommand}" CommandParameter="{Binding ElementName=MainPanel}"/>
@@ -99,7 +106,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn x:Name="Title" Binding="{Binding Path=Title ,Mode=TwoWay}" Header="タイトル" PastingCellClipboardContent="Title_PastingCellClipboardContent"/>
+                <DataGridTextColumn x:Name="Title" Binding="{Binding Path=Title ,Mode=TwoWay}" Header="タイトル" PastingCellClipboardContent="Title_PastingCellClipboardContent" />
                 <DataGridTextColumn x:Name="Time" Binding="{Binding Path=Time ,Mode=TwoWay}" Header="視聴時間(分)" PastingCellClipboardContent="Time_PastingCellClipboardContent"/>
                 <DataGridTextColumn x:Name="Day" Binding="{Binding Path=Day ,Mode=TwoWay}" Header="放送曜日" PastingCellClipboardContent="Day_PastingCellClipboardContent" />
                 <DataGridTextColumn x:Name="ID" Binding="{Binding Path=ID ,Mode=TwoWay}" Header="ID" Visibility="Hidden"/>
@@ -147,6 +154,9 @@
                           />
             </MenuItem>
         </Menu>
+        <StatusBar Name="statusBar"  Height="27" Canvas.Top="293" Width="500" Canvas.Left="-10">
+            <StatusBarItem Name="dataNumDisplay" Content="StatusBarItem" Height="27" VerticalAlignment="Top"/>
+        </StatusBar>
 
 
 

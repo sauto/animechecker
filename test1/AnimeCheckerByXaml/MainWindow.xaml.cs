@@ -84,6 +84,11 @@ namespace AnimeCheckerByXaml
 
             SaveDefaultLayout();
 
+            //コンテキストメニューは論理Treeが違うため、
+            //そのままだとElementNameが使えないため
+            //https://social.msdn.microsoft.com/Forums/netframework/ja-JP/f2202fdc-2fab-4406-9189-58cfec6539da/contextmenu-commandparameter?forum=wpfja
+            NameScope.SetNameScope(contextMenu, NameScope.GetNameScope(this));
+
             try
             {
                 if (System.IO.File.Exists(_dataFileName))
@@ -133,6 +138,8 @@ namespace AnimeCheckerByXaml
                 LoadLayout();
 
             RestTimeText.Text = RestTime;
+
+            dataNumDisplay.Content = "視聴数：" + _allData.dataList.Count(s => !string.IsNullOrEmpty(s.Title));
         }
 
         /// <summary>
@@ -346,6 +353,11 @@ namespace AnimeCheckerByXaml
                 {
                     _allData.dataList.First(s => s.ID == ((DataForXaml)e.Row.Item).ID).Day = ((TextBox)e.EditingElement).Text;
                 }
+                else if (e.Column.Header.ToString() == "タイトル")
+                {
+                    _allData.dataList.First(s => s.ID == ((DataForXaml)e.Row.Item).ID).Title = ((TextBox)e.EditingElement).Text;
+                    dataNumDisplay.Content = "視聴数：" + _allData.dataList.Count(s => !string.IsNullOrEmpty(s.Title));
+                }
 
                 IsNotNeedSaved = false;
             }            
@@ -373,8 +385,7 @@ namespace AnimeCheckerByXaml
         }
 
         /// <summary>
-        /// 異なる行異なる列を選択したコピーの禁止処理
-        /// ペースト
+        /// コピペ処理
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -382,109 +393,129 @@ namespace AnimeCheckerByXaml
         {
             if (Keyboard.Modifiers == ModifierKeys.Control & e.Key == Key.C)
             {
-                List<System.Windows.Point> rowAndColList = new List<System.Windows.Point>();
-                List<int> copyRowList = new List<int>();
-                List<int> copyColumnList = new List<int>();
-
-                var cells = upperdatagrid.SelectedCells;
-                foreach (DataGridCellInfo cell in cells)
-                {
-                    rowAndColList.Add(
-                        new System.Windows.Point(upperdatagrid.Items.IndexOf(cell.Item), cell.Column.DisplayIndex));
-                    int b = copyColumnList.Find(s => s == cell.Column.DisplayIndex);
-                    if (copyColumnList.Count == 0 || !copyColumnList.Contains(cell.Column.DisplayIndex))
-                    {
-                        copyColumnList.Add(cell.Column.DisplayIndex);
-                    }
-                    if (copyRowList.Count == 0 || !copyRowList.Contains(upperdatagrid.Items.IndexOf(cell.Item)))
-                    {
-                        copyRowList.Add(upperdatagrid.Items.IndexOf(cell.Item));
-                    }
-                }
-                int copyRangeColumn = copyColumnList.Count;
-                int copyRangeRow = copyRowList.Count;
-                bool validCopyFlag = true;
-
-                //複数コピーの禁止
-                //全てのXがコピーした列数分だけ存在するか、すべてのYがコピーした行数分だけ存在する
-                foreach (var y in copyColumnList)
-                {
-                    validCopyFlag = true;
-                    if (rowAndColList.FindAll(s => s.Y == y).Count != copyRangeRow)
-                    {
-                        validCopyFlag = false;
-                        break;
-                    }
-                }
-                foreach (var x in copyRowList)
-                {
-                    validCopyFlag = true;
-                    if (rowAndColList.FindAll(s => s.X == x).Count != copyRangeColumn)
-                    {
-                        validCopyFlag = false;
-                        break;
-                    }
-                }
-                if (!validCopyFlag)
-                {
-                    System.Windows.Forms.MessageBox.Show(AnimeCheckerByXaml.Properties.Settings.Default.E0004,
-                                                "エラー", System.Windows.Forms.MessageBoxButtons.OK,
-                                                System.Windows.Forms.MessageBoxIcon.Error);
+                if(!CheckCopyDataGridContents())
                     e.Handled = true;
-                }
-                
             }
 
             if (Keyboard.Modifiers == ModifierKeys.Control & e.Key == Key.V)
             {
-                string buffer = Clipboard.GetText();
-                if (buffer == string.Empty) return;
-
-                DataGrid dataGrid = (DataGrid)sender;
-
-                int rowIndex = dataGrid.Items.IndexOf(dataGrid.CurrentItem);
-                if (rowIndex < 0) rowIndex = 0;
-
-                //改行を統一
-                buffer = buffer.Replace("\r\n", "\n");
-                buffer = buffer.Replace('\r', '\n');
-
-                //内部にDisplayIndexを使うと途中で移動してしまうので
-                int currentCellIndex = dataGrid.CurrentCell.Column.DisplayIndex;
-
-                foreach (string line in buffer.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (rowIndex > dataGrid.Items.Count - 1) return;
-
-                    int i = currentCellIndex;
-                    try
-                    {
-                        foreach (string pasteData in line.Split(new string[] { "\t" }, StringSplitOptions.RemoveEmptyEntries))
-                        {
-                            DataGridColumn column = dataGrid.Columns[i];
-
-                            if (column.Header.ToString() != string.Empty)
-                            {
-                                //チェックボックス以外
-                                column.OnPastingCellClipboardContent(dataGrid.Items[rowIndex], pasteData);
-                            }
-                            else
-                            {
-                                PastingCellClipboardContentForCheckBox(dataGrid.Items[rowIndex], pasteData);
-                            }
-                            i++;
-                        }
-                    }
-                    catch (Exception exp)
-                    {
-                        Debug.WriteLine(exp);
-                    }
-
-                    rowIndex++;
-                }
-
+                PasteDataGridContents();
                 e.Handled = true;
             }
+
+
+        }
+
+        /// <summary>
+        /// DataGridの異なる行異なる列を選択したコピーの禁止処理
+        /// </summary>
+        /// <returns></returns>
+        bool CheckCopyDataGridContents()
+        {
+            List<System.Windows.Point> rowAndColList = new List<System.Windows.Point>();
+            List<int> copyRowList = new List<int>();
+            List<int> copyColumnList = new List<int>();
+
+            var cells = upperdatagrid.SelectedCells;
+            foreach (DataGridCellInfo cell in cells)
+            {
+                rowAndColList.Add(
+                    new System.Windows.Point(upperdatagrid.Items.IndexOf(cell.Item), cell.Column.DisplayIndex));
+                int b = copyColumnList.Find(s => s == cell.Column.DisplayIndex);
+                if (copyColumnList.Count == 0 || !copyColumnList.Contains(cell.Column.DisplayIndex))
+                {
+                    copyColumnList.Add(cell.Column.DisplayIndex);
+                }
+                if (copyRowList.Count == 0 || !copyRowList.Contains(upperdatagrid.Items.IndexOf(cell.Item)))
+                {
+                    copyRowList.Add(upperdatagrid.Items.IndexOf(cell.Item));
+                }
+            }
+            int copyRangeColumn = copyColumnList.Count;
+            int copyRangeRow = copyRowList.Count;
+            bool validCopyFlag = true;
+
+            //複数コピーの禁止
+            //全てのXがコピーした列数分だけ存在するか、すべてのYがコピーした行数分だけ存在する
+            foreach (var y in copyColumnList)
+            {
+                validCopyFlag = true;
+                if (rowAndColList.FindAll(s => s.Y == y).Count != copyRangeRow)
+                {
+                    validCopyFlag = false;
+                    break;
+                }
+            }
+            foreach (var x in copyRowList)
+            {
+                validCopyFlag = true;
+                if (rowAndColList.FindAll(s => s.X == x).Count != copyRangeColumn)
+                {
+                    validCopyFlag = false;
+                    break;
+                }
+            }
+            if (!validCopyFlag)
+            {
+                System.Windows.Forms.MessageBox.Show(AnimeCheckerByXaml.Properties.Settings.Default.E0004,
+                                            "エラー", System.Windows.Forms.MessageBoxButtons.OK,
+                                            System.Windows.Forms.MessageBoxIcon.Error);
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// DataGridのペースト処理
+        /// </summary>
+        void PasteDataGridContents()
+        {
+            string buffer = Clipboard.GetText();
+            if (buffer == string.Empty) return;
+
+            DataGrid dataGrid = upperdatagrid;
+
+            int rowIndex = dataGrid.Items.IndexOf(dataGrid.CurrentItem);
+            if (rowIndex < 0) rowIndex = 0;
+
+            //改行を統一
+            buffer = buffer.Replace("\r\n", "\n");
+            buffer = buffer.Replace('\r', '\n');
+
+            //内部にDisplayIndexを使うと途中で移動してしまうので
+            int currentCellIndex = dataGrid.CurrentCell.Column.DisplayIndex;
+
+            foreach (string line in buffer.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (rowIndex > dataGrid.Items.Count - 1) return;
+
+                int i = currentCellIndex;
+                try
+                {
+                    foreach (string pasteData in line.Split(new string[] { "\t" }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        DataGridColumn column = dataGrid.Columns[i];
+
+                        if (column.Header.ToString() != string.Empty)
+                        {
+                            //チェックボックス以外
+                            column.OnPastingCellClipboardContent(dataGrid.Items[rowIndex], pasteData);
+                        }
+                        else
+                        {
+                            PastingCellClipboardContentForCheckBox(dataGrid.Items[rowIndex], pasteData);
+                        }
+                        i++;
+                    }
+                }
+                catch (Exception exp)
+                {
+                    Debug.WriteLine(exp);
+                }
+
+                rowIndex++;
+            }
+
         }
 
         /// <summary>
@@ -520,6 +551,7 @@ namespace AnimeCheckerByXaml
         }
 
         /// <summary>
+        /// 削除時に残り時間を変更するために
         /// 削除時にSelectedCellが変化するのを利用して削除フラグが立っている間だけ残り時間を更新する
         /// </summary>
         /// <param name="sender"></param>
@@ -527,7 +559,10 @@ namespace AnimeCheckerByXaml
         private void upperdatagrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
             if (_allData.dataList._bindingCommands._deleteflag)
+            {
                 RestTimeText.Text = RestTime;
+                dataNumDisplay.Content = "視聴数：" + _allData.dataList.Count(s => !string.IsNullOrEmpty(s.Title));
+            }
         }
         #endregion
 
@@ -745,9 +780,12 @@ namespace AnimeCheckerByXaml
                         case (int)LayoutTarget.Picture:
                             if (!string.IsNullOrEmpty(line))
                             {
-                                pictureBox.Source = new BitmapImage( new Uri(line));
-                                _imgFilePath = line;
-                                StopResizePictureBox();
+                                if (System.IO.File.Exists(line))
+                                {
+                                    pictureBox.Source = new BitmapImage(new Uri(line));
+                                    _imgFilePath = line;
+                                    StopResizePictureBox();
+                                }
                             }
                             break;
                         case (int)LayoutTarget.DataGridLeft:
@@ -848,9 +886,12 @@ namespace AnimeCheckerByXaml
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void _MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
+        {            
             MainPanel.Height = e.NewSize.Height;
             MainPanel.Width = e.NewSize.Width;
+
+            Canvas.SetTop(statusBar, MainPanel.Height-60);
+            statusBar.Width = e.NewSize.Width;
         }
 
         private void LayoutFix_Checked(object sender, RoutedEventArgs e)
